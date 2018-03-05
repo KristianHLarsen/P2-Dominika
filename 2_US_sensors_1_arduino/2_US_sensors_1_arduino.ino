@@ -6,7 +6,7 @@
 *
 */
 // defines pins numbers
-const int trig1Pin = 6;
+const int trig1Pin = 6; //fuck u, Kristian
 const int echo1Pin = 7;
 
 const int trig2Pin = 8;
