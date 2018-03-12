@@ -1,5 +1,5 @@
 void sendForspoergsel() {
-  RF.print(1);
+  RF.print(request);
   Serial.print("vi sender forspoergsel");
 }
 
@@ -10,7 +10,7 @@ void modtagBekraeftelse() {
   while(RF.available() == 0) { //vent på
   timeout = millis();
   if (timeout > 5000){
-  Serial.println("intet signal);
+  Serial.println("intet signal");
   }
       input = Serial.read();
       if (input = 49){
