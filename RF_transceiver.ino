@@ -18,7 +18,7 @@ void receive()
 {
   if (Serial3.available() > 0 )
   {
-    inputRF = Serial3.read();   //serial 3 koblet til RF modul
+    inputRF = Serial3.read();   //serial 3 er koblet til RF modul
     Serial.write(inputRF);      // skriver til Serial monitor
     Serial.println();
     Serial.println("Modtaget data");
