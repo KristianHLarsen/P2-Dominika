@@ -1,4 +1,4 @@
-//UNO
+//MEGA
 int inputRF; //input Radio Frequency
 int inputSM; // input serial monitor
 void setup()
@@ -20,6 +20,8 @@ void receive()
   {
     inputRF = Serial3.read();   //serial 3 koblet til RF modul
     Serial.write(inputRF);      // skriver til Serial monitor
+    Serial.println();
+    Serial.println("Modtaget data");
   }
 }
 
@@ -31,6 +33,7 @@ void transmit()
     inputSM = Serial.read();   // læser  hvad der bliver skrevet i Serial monitor
     Serial3.write(inputSM);    // sender det der blev skrevet i serial monitor over RF
     Serial.write(inputSM);     // udskriver det samme på serial monitor
+    Serial.println();
+    Serial.println("Sendt data");
   }
 }
-
