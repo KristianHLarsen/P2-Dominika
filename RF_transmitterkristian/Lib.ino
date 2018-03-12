@@ -1,19 +1,26 @@
 void sendForspoergsel() {
   RF.print(request);
-  Serial.print("vi sender forspoergsel");
+  Serial.println("vi sender forspoergsel");
 }
 
+
+Timeout
+
+
 void modtagBekraeftelse() {
-  int input, timeout =0;
+  int input, timeout =0,deltaTime;
+
+  deltaTime=millis();
+
+  while(RF.available() > 0) { //vent på
   timeout = millis();
   
-  while(RF.available() == 0) { //vent på
-  timeout = millis();
-  if (timeout > 5000){
+  if (timeout > 50000){
   Serial.println("intet signal");
   }
+  
       input = Serial.read();
-      if (input = 49){
+      if (input == 49){
       Serial.println("Modtaget signal");
       }
   }
