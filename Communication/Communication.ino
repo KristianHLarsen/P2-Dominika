@@ -2,6 +2,7 @@ void setup() {
   Serial.begin(9600);
   Serial.setTimeout(30000); // timeout paa 3 sekunder.
   Serial1.begin(9600);
+  Serial1.setTimeout(30000);
   pinMode(2,OUTPUT);
 }
 
