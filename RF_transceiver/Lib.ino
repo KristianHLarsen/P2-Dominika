@@ -25,20 +25,21 @@ void receiveString() {
     modtaget = Serial3.readBytesUntil(10, inString, NRCHAR); //break karakter = 10 =return
     Serial3.flush();
     Serial.print("modtaget antal:  "); Serial.println(modtaget);
-    printString(inString,0); //som er &(instring[0]) = inString
+    printString(inString, 0); //som er &(instring[0]) = inString
   }
 }
 
 
 void transmitString() {
- 
+  if (Serial.available() > 0) {
     int modtaget;
     Serial.println("Indtast streng");
     modtaget = Serial.readBytesUntil(10, outString, NRCHAR); //break karakter = 10 =return
     Serial.flush();
     Serial.print("modtaget antal:  "); Serial.println(modtaget);
-    printString(outString,3); //som er &(instring[0]) = inString
+    printString(outString, 3); //som er &(instring[0]) = inString
 
+  }
 }
 
 
@@ -57,7 +58,7 @@ void transmit()
 
 void receive()
 {
-  if (Serial3.available() ) {
+  if (Serial3.available() > 0) {
   }
   inputRF = Serial3.read();   //serial 3 er koblet til RF modul
   Serial.write(inputRF);      // skriver til Serial monitor
