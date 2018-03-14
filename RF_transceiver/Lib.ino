@@ -31,15 +31,14 @@ void receiveString() {
 
 
 void transmitString() {
-  if (Serial.available() > 0 )
-  {
+ 
     int modtaget;
     Serial.println("Indtast streng");
-    modtaget = Serial3.readBytesUntil(10, outString, NRCHAR); //break karakter = 10 =return
+    modtaget = Serial.readBytesUntil(10, outString, NRCHAR); //break karakter = 10 =return
     Serial.flush();
     Serial.print("modtaget antal:  "); Serial.println(modtaget);
     printString(outString,3); //som er &(instring[0]) = inString
-  }
+
 }
 
 
