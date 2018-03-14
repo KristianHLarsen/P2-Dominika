@@ -57,7 +57,7 @@ if(Serial3.available() > 0)
   modtaget = Serial3.readBytesUntil(10, inString, NRCHAR); //break karakter til 
   Serial3.flush();
   Serial.print("modtaget antal:  "); Serial.println(modtaget);
-  printString(inString); //som er &(instring[0]) = inString
+  printString(inString,0); //som er &(instring[0]) = inString
   }
 }
 
