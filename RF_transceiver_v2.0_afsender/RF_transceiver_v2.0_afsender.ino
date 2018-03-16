@@ -4,9 +4,8 @@ int inputSM; // input serial monitor
 #define NRCHAR 100
 #define OUTCHAR 100
 char inString[NRCHAR];
-byte outString[3];
 
-String        tal = String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) + '/';
+//String        tal = String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) + '/';
 
 
 void setup()
@@ -18,12 +17,12 @@ void setup()
   Serial3.flush();
   Serial3.setTimeout(30000);
   Serial.flush();
-  splitUp();
+//  splitUp();
 }
 
 void loop()
 {
- // receiveString();
+  // receiveString();
   transmit();
 
 
@@ -41,20 +40,21 @@ void receive()
 
 void transmit()
 {
-    outString[0] = random(0,255);
-  outString[1] = random(0,255);
-  outString[2] = random(0,2);
+  int outString[3];
 
-       tal = String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) + '/';
+  outString[0] = analogRead(1);
+  outString[1] = analogRead(0);;
+  outString[2] = 1;
 
-    //String tal = String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) + '/';
-    Serial3.print(tal);    // sender det der blev skrevet i serial monitor over RF
-    Serial3.flush();
-    Serial.println();
-    Serial.println("Sendt data");
-    delay(1000);
+ String tal = String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) + '/';
+
+  //String tal = String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) + '/';
+  Serial3.print(tal);    // sender det der blev skrevet i serial monitor over RF
+  Serial3.flush();
+  Serial.println(tal);
+  delay(10);
 }
-
+/*
 void receiveString() {
 
   if (Serial3.available() > 0)
@@ -71,14 +71,14 @@ void receiveString() {
 void splitUp()
 {
   int seperatorEt = tal.indexOf('!');
-  int seperatorTo = tal.indexOf('!',seperatorEt+1);
+  int seperatorTo = tal.indexOf('!', seperatorEt + 1);
   int seperatorTre = tal.indexOf('/');
-  String sub1 = tal.substring(0,seperatorEt);
-  String sub2 = tal.substring(seperatorEt+1,seperatorTo);
-  String sub3 = tal.substring(seperatorTo+1, seperatorTre);
+  String sub1 = tal.substring(0, seperatorEt);
+  String sub2 = tal.substring(seperatorEt + 1, seperatorTo);
+  String sub3 = tal.substring(seperatorTo + 1, seperatorTre);
 
   Serial.println(sub1);
   Serial.println(sub2);
   Serial.println(sub3);
 }
-
+*/
