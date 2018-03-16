@@ -1,3 +1,5 @@
+#include <Servo.h>
+
 int inputRF; //input Radio Frequency
 int inputSM; // input serial monitor
 #define NRCHAR 20
@@ -5,8 +7,14 @@ int inputSM; // input serial monitor
 char instring[NRCHAR];
 byte outString[3] = {111, 22, 1};
 
+int motorVal;
+int dirpin = 11;
+int pwmpin = 6;
+int motorSpeed; // midsteværdi 25 dog maks. 255
+int servoVal;
 
 
+Servo myservo;  
 void setup()
 {
   Serial.begin(9600);
@@ -16,6 +24,10 @@ void setup()
   Serial3.flush();
   Serial3.setTimeout(10000);
   Serial.flush();
+
+  pinMode(dirpin, OUTPUT);
+  pinMode(pwmpin, OUTPUT);
+  myservo.attach(9);
 }
 
 void loop()
@@ -55,5 +67,7 @@ void splitUp(String A )
   Serial.println(PWM_H_bridge);
   Serial.println(PWM_Servo);
   Serial.println(DIR_H_bridge);
-}
 
+  servoControl(PWM_Servo);
+  motorControl(PWM_H_bridge);
+}
