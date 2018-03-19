@@ -121,4 +121,12 @@ void transmit()
   Serial.println(sub2);
   Serial.println(sub3);
   }
+<<<<<<< HEAD
 */
+=======
+<<<<<<< HEAD
+*/
+=======
+*/
+>>>>>>> 1bb0914d32695a11c22f80f698a40253e73621d1
+>>>>>>> 5d069c3d500bb230ce1924ad4bc631728a6e7ecb
