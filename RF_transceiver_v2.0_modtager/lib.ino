@@ -31,4 +31,8 @@ if(motorVal > 490 && motorVal < 510)
   }
 
   analogWrite(pwmpin, motorSpeed);
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 1bb0914d32695a11c22f80f698a40253e73621d1
