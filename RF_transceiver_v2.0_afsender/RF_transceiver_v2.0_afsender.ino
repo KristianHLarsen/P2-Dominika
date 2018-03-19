@@ -41,6 +41,7 @@ void WaitTransmit() {
 }
 
 void lcdPrint()  {
+<<<<<<< HEAD
   if (digitalRead(normal) == HIGH) {
     if (analogRead(A1) > 510) {
       motorSpeed = (0.194932 * (analogRead(A1) - 510));
@@ -64,6 +65,15 @@ void lcdPrint()  {
     lcd.setCursor(0, 1);
     lcd.print("Motor speed ");
     lcd.print(motorSpeed);
+=======
+  int motorSpeed;
+  if (analogRead(A1) > 510) {
+    motorSpeed = (0.13199 * (analogRead(A1) - 510));
+  }
+  if (analogRead(A1) > 490 && analogRead(A1) < 510)
+  {
+    motorSpeed = 0;
+>>>>>>> e4e8ed12ac592f0a403d67dc446a7bf2115fda17
   }
 
   if (digitalRead(boost) == HIGH) {
@@ -169,4 +179,12 @@ void transmit()
   Serial.println(sub2);
   Serial.println(sub3);
   }
+<<<<<<< HEAD
 */
+=======
+<<<<<<< HEAD
+*/
+=======
+*/
+>>>>>>> 1bb0914d32695a11c22f80f698a40253e73621d1
+>>>>>>> 5d069c3d500bb230ce1924ad4bc631728a6e7ecb
