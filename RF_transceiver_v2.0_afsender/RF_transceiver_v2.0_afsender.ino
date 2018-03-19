@@ -7,6 +7,9 @@ int inputSM; // input serial monitor
 #define NRCHAR 100
 #define OUTCHAR 100
 char inString[NRCHAR];
+int boost = 12;
+int normal = 13;
+int motorSpeed;
 
 //String        tal = String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) + '/';
 LiquidCrystal_I2C lcd(0x27, 16, 2);
@@ -22,6 +25,8 @@ void setup()
   Serial.flush();
   //  splitUp();
   lcd.begin();
+  pinMode(boost, INPUT_PULLUP);
+  pinMode(normal, INPUT_PULLUP);
 
 }
 
@@ -36,29 +41,55 @@ void WaitTransmit() {
 }
 
 void lcdPrint()  {
-int motorSpeed;
-  if (analogRead(A1) > 510) {
-    motorSpeed = (0.13199 * (analogRead(A1) - 510));
-  }
-  if (analogRead(A1) > 490 && analogRead(A1) < 510)
-  {
-    motorSpeed = 0;
+  if (digitalRead(normal) == HIGH) {
+    if (analogRead(A1) > 510) {
+      motorSpeed = (0.194932 * (analogRead(A1) - 510));
+    }
+    if (analogRead(A1) > 490 && analogRead(A1) < 510)
+    {
+      motorSpeed = 0;
+    }
+
+    if (analogRead(A1) < 490)  {
+      motorSpeed = (0.204082 * (analogRead(A1) - 490) * (-1));
+    }
+
+    lcd.setCursor(12, 0);
+    lcd.print("    ");
+    lcd.setCursor(12, 1);
+    lcd.print("    ");
+    lcd.setCursor(0, 0);
+    lcd.print("Servo value ");
+    lcd.print(analogRead(A0));
+    lcd.setCursor(0, 1);
+    lcd.print("Motor speed ");
+    lcd.print(motorSpeed);
   }
 
-  if (analogRead(A1) < 490)  {
-    motorSpeed = (0.133061 * (analogRead(A1) - 490) * (-1));
-  }
+  if (digitalRead(boost) == HIGH) {
+    if (analogRead(A1) > 510) {
+      motorSpeed = (0.194932 * (analogRead(A1) - 510));
+    }
+    if (analogRead(A1) > 490 && analogRead(A1) < 510)
+    {
+      motorSpeed = 0;
+    }
 
-  lcd.setCursor(12, 0);
-  lcd.print("    ");
-  lcd.setCursor(12, 1);
-  lcd.print("    ");
-  lcd.setCursor(0, 0);
-  lcd.print("Servo value ");
-  lcd.print(analogRead(A0));
-  lcd.setCursor(0, 1);
-  lcd.print("Motor speed ");
-  lcd.print(motorSpeed);
+    if (analogRead(A1) < 490)  {
+      motorSpeed = (0.204082 * (analogRead(A1) - 490) * (-1)*2);
+    }
+
+    lcd.setCursor(12, 0);
+    lcd.print("    ");
+    lcd.setCursor(12, 1);
+    lcd.print("    ");
+    lcd.setCursor(0, 0);
+    lcd.print("Servo value ");
+    lcd.print(analogRead(A0));
+    lcd.setCursor(0, 1);
+    lcd.print("Boost speed ");
+    lcd.print(motorSpeed);
+  }
 }
 
 void loop()
@@ -81,18 +112,35 @@ void receive()
 void transmit()
 {
   int outString[3];
+  if  (digitalRead(normal) == HIGH) {
 
-  outString[0] = analogRead(1);
-  outString[1] = analogRead(0);;
-  outString[2] = 1;
+    outString[0] = analogRead(1);
+    outString[1] = analogRead(0);
+    outString[2] = 1;
 
-  String tal = String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) + '/';
+    String tal = String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) + '/';
 
-  //String tal = String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) + '/';
-  Serial3.print(tal);    // sender det der blev skrevet i serial monitor over RF
-  Serial3.flush();
-  Serial.println(tal);
-  delay(10);
+    //String tal = String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) + '/';
+    Serial3.print(tal);    // sender det der blev skrevet i serial monitor over RF
+    Serial3.flush();
+    Serial.println(tal);
+    delay(10);
+  }
+
+  if  (digitalRead(boost) == HIGH) {
+
+    outString[0] = analogRead(1);
+    outString[1] = analogRead(0);
+    outString[2] = 2.5;
+
+    String tal = String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) + '/';
+
+    //String tal = String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) + '/';
+    Serial3.print(tal);    // sender det der blev skrevet i serial monitor over RF
+    Serial3.flush();
+    Serial.println(tal);
+    delay(10);
+  }
 }
 /*
   void receiveString() {

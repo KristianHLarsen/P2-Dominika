@@ -69,5 +69,5 @@ void splitUp(String A )
   Serial.println(DIR_H_bridge);
 
   servoControl(PWM_Servo);
-  motorControl(PWM_H_bridge);
+  motorControl(PWM_H_bridge, DIR_H_bridge);
 }
