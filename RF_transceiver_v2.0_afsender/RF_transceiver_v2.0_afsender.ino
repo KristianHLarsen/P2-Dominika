@@ -36,7 +36,7 @@ void WaitTransmit() {
 }
 
 void lcdPrint()  {
-int motorSpeed;
+  int motorSpeed;
   if (analogRead(A1) > 510) {
     motorSpeed = (0.13199 * (analogRead(A1) - 510));
   }

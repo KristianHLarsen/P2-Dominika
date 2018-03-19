@@ -52,7 +52,6 @@ void receiveString2() {
 
 void splitUp(String A )
 {
-
   int seperatorEt = A.indexOf('!');
   int seperatorTo = A.indexOf('!', seperatorEt + 1);
   int seperatorTre = A.indexOf('/');
