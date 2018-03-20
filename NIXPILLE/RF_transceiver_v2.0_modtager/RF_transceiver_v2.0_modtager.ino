@@ -9,7 +9,7 @@ byte outString[3] = {111, 22, 1};
 
 int motorVal;
 int dirpin = 11;
-int pwmpin = 6;
+int pwmpin = 7;
 int motorSpeed; // midsteværdi 25 dog maks. 255
 int servoVal;
 

@@ -11,6 +11,9 @@ int boost = 12;
 int normal = 13;
 int motorSpeed;
 
+  int outString[3];
+
+
 //String        tal = String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) + '/';
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
@@ -43,7 +46,7 @@ void WaitTransmit() {
 void lcdPrint()  {
   if (digitalRead(normal) == HIGH) {
     if (analogRead(A1) > 510) {
-      motorSpeed = (0.194932 * (analogRead(A1) - 510));
+      motorSpeed = (0.153061 * (analogRead(A1) - 510));
     }
     if (analogRead(A1) > 490 && analogRead(A1) < 510)
     {
@@ -51,7 +54,7 @@ void lcdPrint()  {
     }
 
     if (analogRead(A1) < 490)  {
-      motorSpeed = (0.204082 * (analogRead(A1) - 490) * (-1));
+      motorSpeed = (0.146199 * (analogRead(A1) - 490) * (-1));
     }
 
     lcd.setCursor(12, 0);
@@ -68,7 +71,7 @@ void lcdPrint()  {
 
   if (digitalRead(boost) == HIGH) {
     if (analogRead(A1) > 510) {
-      motorSpeed = (0.194932 * (analogRead(A1) - 510));
+      motorSpeed = (0.153061 * (analogRead(A1) - 510));
     }
     if (analogRead(A1) > 490 && analogRead(A1) < 510)
     {
@@ -76,7 +79,7 @@ void lcdPrint()  {
     }
 
     if (analogRead(A1) < 490)  {
-      motorSpeed = (0.204082 * (analogRead(A1) - 490) * (-1)*2);
+      motorSpeed = (0.146199 * (outString[0] - 490) * (-1)*2);
     }
 
     lcd.setCursor(12, 0);
@@ -111,7 +114,6 @@ void receive()
 
 void transmit()
 {
-  int outString[3];
   if  (digitalRead(normal) == HIGH) {
 
     outString[0] = analogRead(1);
