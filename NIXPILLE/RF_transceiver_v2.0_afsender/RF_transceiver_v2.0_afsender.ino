@@ -131,7 +131,7 @@ void transmit()
 
     outString[0] = analogRead(1);
     outString[1] = analogRead(0);
-    outString[2] = 2.5;
+    outString[2] = 3;
 
     String tal = String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) + '/';
 
