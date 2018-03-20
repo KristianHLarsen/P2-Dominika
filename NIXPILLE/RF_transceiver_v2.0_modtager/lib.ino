@@ -13,7 +13,7 @@ void motorControl(int motorVal, int boost) {
 
   if (motorVal > 510) {
     digitalWrite(dirpin, LOW);
-    motorSpeed = (0.13199 * (motorVal - 510));
+    motorSpeed = (0.194932 * (motorVal - 510));
     if (motorSpeed < 0) {
       motorSpeed = 0;
     }
@@ -24,7 +24,7 @@ if(motorVal > 490 && motorVal < 510)
 }
   if (motorVal < 490) {
     digitalWrite(dirpin, HIGH);
-    motorSpeed = (0.13199 * (motorVal - 490) * (-1) * boost);
+    motorSpeed = (0.194932 * (motorVal - 490) * (-1) * boost);
     if (motorSpeed < 0) {
       motorSpeed = 0;
     }

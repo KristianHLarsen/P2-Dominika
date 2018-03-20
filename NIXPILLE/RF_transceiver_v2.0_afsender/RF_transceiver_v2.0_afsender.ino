@@ -68,7 +68,7 @@ void lcdPrint()  {
 
   if (digitalRead(boost) == HIGH) {
     if (analogRead(A1) > 510) {
-      motorSpeed = (0.13199 * (analogRead(A1) - 510));
+      motorSpeed = (0.194932 * (analogRead(A1) - 510));
     }
     if (analogRead(A1) > 490 && analogRead(A1) < 510)
     {
@@ -76,7 +76,7 @@ void lcdPrint()  {
     }
 
     if (analogRead(A1) < 490)  {
-      motorSpeed = (0.13199 * (analogRead(A1) - 490) * (-1)*3);
+      motorSpeed = (0,194932 * (analogRead(A1) - 490) * (-1)*2);
     }
 
     lcd.setCursor(12, 0);
@@ -131,7 +131,7 @@ void transmit()
 
     outString[0] = analogRead(1);
     outString[1] = analogRead(0);
-    outString[2] = 3;
+    outString[2] = 2;
 
     String tal = String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) + '/';
 
