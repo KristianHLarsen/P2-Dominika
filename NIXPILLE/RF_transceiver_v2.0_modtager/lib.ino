@@ -24,7 +24,7 @@ if(motorVal > 490 && motorVal < 510)
 }
   if (motorVal < 490) {
     digitalWrite(dirpin, HIGH);
-    motorSpeed = (0.194932 * (motorVal - 490) * (-1) * boost);
+    motorSpeed = (0.204082 * (motorVal - 490) * (-1) * boost);
     if (motorSpeed < 0) {
       motorSpeed = 0;
     }
