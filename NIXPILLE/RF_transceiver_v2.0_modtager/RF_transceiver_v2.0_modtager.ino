@@ -7,14 +7,14 @@ int inputSM; // input serial monitor
 char instring[NRCHAR];
 byte outString[3] = {111, 22, 1};
 
-int motorVal;
+int motorVal = 0;
 int dirpin = 11;
 int pwmpin = 7;
-int motorSpeed; // midsteværdi 25 dog maks. 255
-int servoVal;
+int motorSpeed = 0; // midsteværdi 25 dog maks. 255
+int servoVal = 0;
 
+Servo myservo;
 
-Servo myservo;  
 void setup()
 {
   Serial.begin(9600);
@@ -33,7 +33,6 @@ void setup()
 void loop()
 {
   receiveString2();
-
 }
 
 
@@ -42,30 +41,34 @@ void receiveString2() {
   {
     int modtaget;
     modtaget = Serial3.readBytesUntil('/', instring, NRCHAR); //break karakter = 10 =return
+
     Serial3.flush();
     String str = String(instring);
-    splitUp(str);
+    splitUp(str, modtaget);
+    Serial.flush();
   }
 }
 
 
 
-void splitUp(String A )
+void splitUp(String A, int modtaget )
 {
 
   int seperatorEt = A.indexOf('!');
   int seperatorTo = A.indexOf('!', seperatorEt + 1);
-  int seperatorTre = A.indexOf('/');
+  int seperatorTre = A.indexOf('!');
   String sub1 = A.substring(0, seperatorEt);
   String sub2 = A.substring(seperatorEt + 1, seperatorTo);
-  String sub3 = A.substring(seperatorTo + 1, seperatorTre);
+  String sub3 = A.substring(seperatorTo + 1, modtaget);
 
   int PWM_H_bridge = sub1.toInt();
   int PWM_Servo = sub2.toInt();
   int DIR_H_bridge = sub3.toInt();
-  
-  Serial.println(PWM_H_bridge);
-  Serial.println(PWM_Servo);
+
+
+
+  Serial.println("H-bro: " + String(PWM_H_bridge));
+  Serial.println("Servo: " + String(PWM_Servo));
   Serial.println(DIR_H_bridge);
 
   servoControl(PWM_Servo);

@@ -66,7 +66,7 @@ void lcdPrint()  {
     lcd.print(analogRead(A0));
     lcd.setCursor(0, 1);
     lcd.print("Motor speed ");
-    lcd.print(motorSpeed);
+    lcd.print(outString[0]);
   }
 
   if (digitalRead(boost) == HIGH) {
@@ -79,7 +79,7 @@ void lcdPrint()  {
     }
 
     if (analogRead(A1) < 490)  {
-      motorSpeed = (0.146199 * (outString[0] - 490) * (-1)*2);
+      motorSpeed = (0.146199 * (analogRead(A1) - 490) * (-1)*2);
     }
 
     lcd.setCursor(12, 0);
@@ -120,7 +120,7 @@ void transmit()
     outString[1] = analogRead(0);
     outString[2] = 1;
 
-    String tal = String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) + '/';
+    String tal = String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) +'!' + '/';
 
     //String tal = String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) + '/';
     Serial3.print(tal);    // sender det der blev skrevet i serial monitor over RF

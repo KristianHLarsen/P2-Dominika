@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 
->>>>>>> e4e8ed12ac592f0a403d67dc446a7bf2115fda17
 #include <Servo.h>
 
 int inputRF; //input Radio Frequency
@@ -17,21 +14,14 @@ int pwmpin = 6;
 int motorSpeed; // midsteværdi 25 dog maks. 255
 int servoVal;
 
-<<<<<<< HEAD
 
 Servo myservo;  
-=======
-Servo myservo;  
 
->>>>>>> e4e8ed12ac592f0a403d67dc446a7bf2115fda17
 void setup()
 {
   Serial.begin(9600);
   Serial.setTimeout(30000);
-<<<<<<< HEAD
   //Serial.print("WR_433920_3_9_0_0");
-=======
->>>>>>> e4e8ed12ac592f0a403d67dc446a7bf2115fda17
   Serial3.begin(9600);
   Serial3.flush();
   Serial3.setTimeout(10000);
@@ -44,32 +34,17 @@ void setup()
 
 void loop()
 {
-<<<<<<< HEAD
-  receiveString2();
-=======
+
   receiveString();
->>>>>>> e4e8ed12ac592f0a403d67dc446a7bf2115fda17
 
 }
 
-
-<<<<<<< HEAD
-void receiveString2() {
-  if (Serial3.available() > 0 )
-  {
-    int modtaget;
-    modtaget = Serial3.readBytesUntil('/', instring, NRCHAR); //break karakter = 10 =return
-    Serial3.flush();
-    String str = String(instring);
-=======
 void receiveString() {
   if (Serial3.available() > 0 )
   {
     Serial3.readBytesUntil('/', instring, NRCHAR); //break karakter = 10 =return
     Serial3.flush();
     String str = String(instring);
-    
->>>>>>> e4e8ed12ac592f0a403d67dc446a7bf2115fda17
     splitUp(str);
   }
 }
@@ -78,10 +53,6 @@ void receiveString() {
 
 void splitUp(String A )
 {
-<<<<<<< HEAD
-
-=======
->>>>>>> e4e8ed12ac592f0a403d67dc446a7bf2115fda17
   int seperatorEt = A.indexOf('!');
   int seperatorTo = A.indexOf('!', seperatorEt + 1);
   int seperatorTre = A.indexOf('/');
@@ -98,12 +69,6 @@ void splitUp(String A )
   Serial.println(DIR_H_bridge);
 
   servoControl(PWM_Servo);
-<<<<<<< HEAD
   motorControl(PWM_H_bridge, DIR_H_bridge);
 }
-=======
-  motorControl(PWM_H_bridge);
-}
 
-
->>>>>>> e4e8ed12ac592f0a403d67dc446a7bf2115fda17

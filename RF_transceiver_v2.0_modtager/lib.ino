@@ -1,5 +1,3 @@
-
-<<<<<<< HEAD
 void servoControl(int servoVal) {
 //  servoVal = analogRead(A0);
   
@@ -32,6 +30,5 @@ if(motorVal > 490 && motorVal < 510)
   }
 
   analogWrite(pwmpin, motorSpeed);
+  Serial.println(motorSpeed);
 }
-=======
->>>>>>> e4e8ed12ac592f0a403d67dc446a7bf2115fda17
