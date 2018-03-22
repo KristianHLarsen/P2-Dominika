@@ -40,5 +40,5 @@ distance= duration*0.034;
 // Prints the distance on the Serial Monitor
 Serial.print("Distance: ");
 Serial.println(distance);
-delay(40);
+delay(180);
 }

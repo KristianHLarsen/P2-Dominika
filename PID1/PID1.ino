@@ -24,8 +24,8 @@ double PWM = 0;
 double distance = 0;
 double goal = 40;
 
-double servoval;
-double servoGoal = 90;
+  double angle;
+double servoGoal = 0;
 double servoPWM = 0;
 
 bool trigBool1 = false;
@@ -40,7 +40,9 @@ bool readyBool2;
 
 Servo myservo;
 PID distancePID(&distance, &PWM, &goal, 0.9, 0, 0, P_ON_E, REVERSE);
-PID servoPID(&servoval, &servoPWM, &servoGoal, 1, 0, 0, P_ON_E, DIRECT);
+PID servoPID(&angle, &servoPWM, &servoGoal, 1, 0, 0, P_ON_E, DIRECT);
+PID servo1PID(&angle, &servoPWM, &servoGoal, 1, 0, 0, P_ON_E, REVERSE);
+
 
 void setup() {
   // put your setup code here, to run once:
@@ -53,8 +55,12 @@ void setup() {
   pinMode(PWM_PIN, OUTPUT);
 
   distancePID.SetOutputLimits(0, 50);
+  servoPID.SetOutputLimits(110,145);
+  servo1PID.SetOutputLimits(75,110);
   distancePID.SetMode(AUTOMATIC);
   servoPID.SetMode(AUTOMATIC);
+  servo1PID.SetMode(AUTOMATIC);
+
   digitalWrite(13, LOW);
 
   myservo.attach(9);
@@ -73,7 +79,6 @@ void printDist() // FUnktionen der udskriver på serial monitor
   double side3;
   double side4;
   double theta;
-  double angle;
 
 
   echo1Time = echo1Slut - echo1Start;
