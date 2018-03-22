@@ -1,5 +1,6 @@
 #include <Servo.h>
 #include <PID_v1.h>
+#define pi 3.14159265
 
 
 const int trig1Pin = 40;
@@ -24,7 +25,7 @@ double distance = 0;
 double goal = 40;
 
 double servoval;
-double servoGoal=90;
+double servoGoal = 90;
 double servoPWM = 0;
 
 bool trigBool1 = false;
@@ -37,11 +38,11 @@ bool readyBool2;
 
 
 
-  Servo myservo;
-  PID distancePID(&distance, &PWM, &goal, 0.9,0,0,P_ON_E,REVERSE);
-  PID servoPID(&servoval,&servoPWM, &servoGoal,1,0,0, P_ON_E. DIRECT);
-  
-  );void setup() {
+Servo myservo;
+PID distancePID(&distance, &PWM, &goal, 0.9, 0, 0, P_ON_E, REVERSE);
+PID servoPID(&servoval, &servoPWM, &servoGoal, 1, 0, 0, P_ON_E, DIRECT);
+
+void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
   pinMode(trig1Pin, OUTPUT); // Sets the trigPin as an Output
@@ -51,10 +52,10 @@ bool readyBool2;
   pinMode(13, OUTPUT);
   pinMode(PWM_PIN, OUTPUT);
 
-  distancePID.SetOutputLimits(0,50);
+  distancePID.SetOutputLimits(0, 50);
   distancePID.SetMode(AUTOMATIC);
   servoPID.SetMode(AUTOMATIC);
-  digitalWrite(13,LOW);
+  digitalWrite(13, LOW);
 
   myservo.attach(9);
 }
@@ -67,12 +68,32 @@ void loop() {
 
 void printDist() // FUnktionen der udskriver på serial monitor
 {
+  double side1;
+  double side2;
+  double side3;
+  double side4;
+  double theta;
+  double angle;
+
+
   echo1Time = echo1Slut - echo1Start;
   echo2Time = echo2Slut - echo2Start;
+  side1 = (echo1Time * 0.034);
+  side2 = (echo2Time * 0.034);
+  side3 = (11.3);
+
+  side4 = sqrt((((2 * side1) * (2 * side1)) + ((2 * side2) * (2 * side2)) - ((side3) * (side3))) / 4);
+
+  theta = ((((side3 / 2) * (side3 / 2)) + ((side4) * (side4)) - ((side2) * (side2))) / (2 * (side3 / 2) * side4));
+
+  angle = ((cos(theta)) * (180 / pi));
+
+  Serial.println(angle);
+
   distance = (echo1Time * 0.034 + echo2Time * 0.034) / 2;
- // Serial.println("Dist 1: " + String(echo1Time * 0.034));
- // Serial.println("Dist 2: " + String(echo2Time * 0.034));
-  Serial.println((echo1Time * 0.034 - echo2Time * 0.034));
+  // Serial.println("Dist 1: " + String(echo1Time * 0.034));
+  // Serial.println("Dist 2: " + String(echo2Time * 0.034));
+  //Serial.println((echo1Time * 0.034 - echo2Time * 0.034));
   echo1Bool = true;
   echo2Bool = true;
   echo1Slut = 0;
@@ -125,7 +146,7 @@ void transmit()
   }
 }
 
-void prepareVariables() 
+void prepareVariables()
 {
   echo1Start = micros();          // startværdi, altså her echoPin går HØJ
   echo2Start = echo1Start;
