@@ -11,8 +11,6 @@
  * 
  * 
  */
-
-
 const int trig1Pin = 2;
 const int echo1Pin = 3;
 
