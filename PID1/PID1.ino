@@ -1,3 +1,4 @@
+#include <Servo.h>
 #include <PID_v1.h>
 
 
@@ -22,6 +23,10 @@ double PWM = 0;
 double distance = 0;
 double goal = 40;
 
+double servoval;
+double servoGoal=90;
+double servoPWM = 0;
+
 bool trigBool1 = false;
 bool trigBool2 = false;
 
@@ -32,10 +37,11 @@ bool readyBool2;
 
 
 
-
+  Servo myservo;
   PID distancePID(&distance, &PWM, &goal, 0.9,0,0,P_ON_E,REVERSE);
-
-void setup() {
+  PID servoPID(&servoval,&servoPWM, &servoGoal,1,0,0, P_ON_E. DIRECT);
+  
+  );void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
   pinMode(trig1Pin, OUTPUT); // Sets the trigPin as an Output
@@ -47,7 +53,10 @@ void setup() {
 
   distancePID.SetOutputLimits(0,50);
   distancePID.SetMode(AUTOMATIC);
+  servoPID.SetMode(AUTOMATIC);
   digitalWrite(13,LOW);
+
+  myservo.attach(9);
 }
 
 void loop() {
@@ -68,8 +77,11 @@ void printDist() // FUnktionen der udskriver på serial monitor
   echo2Bool = true;
   echo1Slut = 0;
   echo2Slut = 0;
+
+  servoPID.Compute();
   distancePID.Compute();
   analogWrite(PWM_PIN, PWM);
+  myservo.write(servoPWM);
 
 
   if (distance > 25)
