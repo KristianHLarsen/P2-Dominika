@@ -39,19 +39,20 @@ void printDist(int echo1Time, int echo2Time) // FUnktionen der udskriver på ser
 
   theta = ((((side3 / 2) * (side3 / 2)) + ((side4) * (side4)) - ((side2) * (side2))) / (2 * (side3 / 2) * side4));
 
-  angle = ((cos(theta)) * (180 / 3.14159265));
+  angle = ((acos(theta)) * (180 / 3.14159265));
 
   Serial.println(angle);
 
   distance = (echo1Time * 0.034 + echo2Time * 0.034) / 2;
   // Serial.println("Dist 1: " + String(echo1Time * 0.034));
   // Serial.println("Dist 2: " + String(echo2Time * 0.034));
-  //Serial.println((echo1Time * 0.034 - echo2Time * 0.034));
+  Serial.print("Forskel: ");
+  Serial.println((echo1Time * 0.034 - echo2Time * 0.034));
 
-  if (angle > 0) {
+  if (angle > 90) {
     servoPID.Compute();
   }
-  else if (angle <= 0) {
+  else if (angle <= 90) {
     servo1PID.Compute();
   }
 

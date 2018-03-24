@@ -1,6 +1,6 @@
 #include <Servo.h>
 #include <PID_v1.h>
-
+#include <math.h>
 
 const int trig1Pin = 40;
 const int echo1Pin = 41;
@@ -14,7 +14,7 @@ double distance = 0;
 double goal = 40;
 
 double angle;
-double servoGoal = 0;
+double servoGoal = 90;
 double servoPWM = 0;
 
 
@@ -22,7 +22,7 @@ double servoPWM = 0;
 Servo myservo;
 PID distancePID(&distance, &PWM, &goal, 0.9, 0, 0, P_ON_E, REVERSE);
 PID servoPID(&angle, &servoPWM, &servoGoal, 1, 0, 0, P_ON_E, DIRECT);
-PID servo1PID(&angle, &servoPWM, &servoGoal, 1, 0, 0, P_ON_E, DIRECT);
+PID servo1PID(&angle, &servoPWM, &servoGoal, 1, 0, 0, P_ON_E, REVERSE);
 
 
 void setup() {
