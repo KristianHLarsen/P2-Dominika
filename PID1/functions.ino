@@ -35,26 +35,35 @@ void printDist(int echo1Time, int echo2Time) // FUnktionen der udskriver på ser
   side2 = (echo2Time * 0.034);
   side3 = (11.3);
 
-  side4 = sqrt((((2 * side1) * (2 * side1)) + ((2 * side2) * (2 * side2)) - ((side3) * (side3))) / 4);
+  side4 = sqrt(((2*((side1) * (side1))) + ((2*(side2) * (side2))) - ((side3) * (side3))) / 4);
 
   theta = ((((side3 / 2) * (side3 / 2)) + ((side4) * (side4)) - ((side2) * (side2))) / (2 * (side3 / 2) * side4));
 
   angle = ((acos(theta)) * (180 / 3.14159265));
 
-  Serial.println(angle);
+ //Serial.println(side1);
+ //Serial.println(side2);
+ //Serial.println(side3);
+  //Serial.println(side4);
+  //Serial.println(theta);
+  
 
   distance = (echo1Time * 0.034 + echo2Time * 0.034) / 2;
   // Serial.println("Dist 1: " + String(echo1Time * 0.034));
   // Serial.println("Dist 2: " + String(echo2Time * 0.034));
-  Serial.print("Forskel: ");
-  Serial.println((echo1Time * 0.034 - echo2Time * 0.034));
+  //Serial.print("Forskel: ");
+  //Serial.println((echo1Time * 0.034 - echo2Time * 0.034));
 
-  if (angle > 90) {
+  if (angle < servoGoal && angle > 45) {
     servoPID.Compute();
   }
-  else if (angle <= 90) {
+  else if (angle > servoGoal && angle < 135 ) {
     servo1PID.Compute();
+    servoPWM = map(servoPWM, 75,110, 110 ,75);
   }
+  Serial.println("Vinkel: " + String(angle));
+  Serial.println("PWM: " + String(servoPWM));
+ 
 
   distancePID.Compute();
   analogWrite(PWM_PIN, PWM);
@@ -70,7 +79,8 @@ void printDist(int echo1Time, int echo2Time) // FUnktionen der udskriver på ser
   {
     digitalWrite(13, HIGH);
   }
-
+tid = millis();
+delay(1000);
 
 }
 
