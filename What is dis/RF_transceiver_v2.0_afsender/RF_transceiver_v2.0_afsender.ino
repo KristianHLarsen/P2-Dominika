@@ -11,9 +11,6 @@ int boost = 12;
 int normal = 13;
 int motorSpeed;
 
-  int outString[3];
-
-
 //String        tal = String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) + '/';
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
@@ -44,9 +41,10 @@ void WaitTransmit() {
 }
 
 void lcdPrint()  {
+<<<<<<< HEAD
   if (digitalRead(normal) == HIGH) {
     if (analogRead(A1) > 510) {
-      motorSpeed = (0.153061 * (analogRead(A1) - 510));
+      motorSpeed = (0.194932 * (analogRead(A1) - 510));
     }
     if (analogRead(A1) > 490 && analogRead(A1) < 510)
     {
@@ -54,7 +52,7 @@ void lcdPrint()  {
     }
 
     if (analogRead(A1) < 490)  {
-      motorSpeed = (0.146199 * (analogRead(A1) - 490) * (-1));
+      motorSpeed = (0.204082 * (analogRead(A1) - 490) * (-1));
     }
 
     lcd.setCursor(12, 0);
@@ -66,12 +64,21 @@ void lcdPrint()  {
     lcd.print(analogRead(A0));
     lcd.setCursor(0, 1);
     lcd.print("Motor speed ");
-    lcd.print(outString[0]);
+    lcd.print(motorSpeed);
+=======
+  int motorSpeed;
+  if (analogRead(A1) > 510) {
+    motorSpeed = (0.13199 * (analogRead(A1) - 510));
+  }
+  if (analogRead(A1) > 490 && analogRead(A1) < 510)
+  {
+    motorSpeed = 0;
+>>>>>>> e4e8ed12ac592f0a403d67dc446a7bf2115fda17
   }
 
   if (digitalRead(boost) == HIGH) {
     if (analogRead(A1) > 510) {
-      motorSpeed = (0.153061 * (analogRead(A1) - 510));
+      motorSpeed = (0.194932 * (analogRead(A1) - 510));
     }
     if (analogRead(A1) > 490 && analogRead(A1) < 510)
     {
@@ -79,7 +86,7 @@ void lcdPrint()  {
     }
 
     if (analogRead(A1) < 490)  {
-      motorSpeed = (0.146199 * (analogRead(A1) - 490) * (-1)*2);
+      motorSpeed = (0.204082 * (analogRead(A1) - 490) * (-1)*2);
     }
 
     lcd.setCursor(12, 0);
@@ -114,13 +121,14 @@ void receive()
 
 void transmit()
 {
+  int outString[3];
   if  (digitalRead(normal) == HIGH) {
 
     outString[0] = analogRead(1);
     outString[1] = analogRead(0);
     outString[2] = 1;
 
-    String tal = String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) +'!' + '/';
+    String tal = String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) + '/';
 
     //String tal = String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) + '/';
     Serial3.print(tal);    // sender det der blev skrevet i serial monitor over RF
@@ -133,7 +141,7 @@ void transmit()
 
     outString[0] = analogRead(1);
     outString[1] = analogRead(0);
-    outString[2] = 2;
+    outString[2] = 2.5;
 
     String tal = String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) + '/';
 
@@ -171,4 +179,12 @@ void transmit()
   Serial.println(sub2);
   Serial.println(sub3);
   }
+<<<<<<< HEAD
 */
+=======
+<<<<<<< HEAD
+*/
+=======
+*/
+>>>>>>> 1bb0914d32695a11c22f80f698a40253e73621d1
+>>>>>>> 5d069c3d500bb230ce1924ad4bc631728a6e7ecb

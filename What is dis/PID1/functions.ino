@@ -1,47 +1,6 @@
-#include <Servo.h>
-#include <PID_v1.h>
 
 
-const int trig1Pin = 40;
-const int echo1Pin = 41;
-
-const int trig2Pin = 42;
-const int echo2Pin = 43;
-
-bool echo1Bool = true;
-int echo1Start;
-int echo1Slut;
-int echo1Time;
-
-bool echo2Bool = true;
-int echo2Start;
-int echo2Slut;
-int echo2Time;
-
-int PWM_PIN = 7;
-double PWM = 0;
-double distance = 0;
-double goal = 40;
-
-double servoval;
-double servoGoal=90;
-double servoPWM = 0;
-
-bool trigBool1 = false;
-bool trigBool2 = false;
-
-bool readyBool1;
-bool readyBool2;
-
-
-
-
-
-  Servo myservo;
-  PID distancePID(&distance, &PWM, &goal, 0.9,0,0,P_ON_E,REVERSE);
-  PID servoPID(&servoval,&servoPWM, &servoGoal,1,0,0, P_ON_E. DIRECT);
-  
-  );void setup() {
+void setupConfig() {
   // put your setup code here, to run once:
   Serial.begin(9600);
   pinMode(trig1Pin, OUTPUT); // Sets the trigPin as an Output
@@ -51,34 +10,61 @@ bool readyBool2;
   pinMode(13, OUTPUT);
   pinMode(PWM_PIN, OUTPUT);
 
-  distancePID.SetOutputLimits(0,50);
+  distancePID.SetOutputLimits(0, 50);
+  servoPID.SetOutputLimits(110, 145);
+  servo1PID.SetOutputLimits(75, 110);
   distancePID.SetMode(AUTOMATIC);
   servoPID.SetMode(AUTOMATIC);
-  digitalWrite(13,LOW);
+  servo1PID.SetMode(AUTOMATIC);
+
+  digitalWrite(13, LOW);
 
   myservo.attach(9);
 }
 
-void loop() {
-  transmit();
-
-
-}
-
-void printDist() // FUnktionen der udskriver på serial monitor
+void printDist(int echo1Time, int echo2Time) // FUnktionen der udskriver på serial monitor
 {
-  echo1Time = echo1Slut - echo1Start;
-  echo2Time = echo2Slut - echo2Start;
-  distance = (echo1Time * 0.034 + echo2Time * 0.034) / 2;
- // Serial.println("Dist 1: " + String(echo1Time * 0.034));
- // Serial.println("Dist 2: " + String(echo2Time * 0.034));
-  Serial.println((echo1Time * 0.034 - echo2Time * 0.034));
-  echo1Bool = true;
-  echo2Bool = true;
-  echo1Slut = 0;
-  echo2Slut = 0;
+  double side1;
+  double side2;
+  double side3;
+  double side4;
+  double theta;
 
-  servoPID.Compute();
+
+  side1 = (echo1Time * 0.034);
+  side2 = (echo2Time * 0.034);
+  side3 = (11.3);
+
+  side4 = sqrt(((2*((side1) * (side1))) + ((2*(side2) * (side2))) - ((side3) * (side3))) / 4);
+
+  theta = ((((side3 / 2) * (side3 / 2)) + ((side4) * (side4)) - ((side2) * (side2))) / (2 * (side3 / 2) * side4));
+
+  angle = ((acos(theta)) * (180 / 3.14159265));
+
+ //Serial.println(side1);
+ //Serial.println(side2);
+ //Serial.println(side3);
+  //Serial.println(side4);
+  //Serial.println(theta);
+  
+
+  distance = (echo1Time * 0.034 + echo2Time * 0.034) / 2;
+  // Serial.println("Dist 1: " + String(echo1Time * 0.034));
+  // Serial.println("Dist 2: " + String(echo2Time * 0.034));
+  //Serial.print("Forskel: ");
+  //Serial.println((echo1Time * 0.034 - echo2Time * 0.034));
+
+  if (angle < servoGoal && angle > 45) {
+    servoPID.Compute();
+  }
+  else if (angle > servoGoal && angle < 135 ) {
+    servo1PID.Compute();
+    servoPWM = map(servoPWM, 75,110, 110 ,75);
+  }
+  Serial.println("Vinkel: " + String(angle));
+  Serial.println("PWM: " + String(servoPWM));
+ 
+
   distancePID.Compute();
   analogWrite(PWM_PIN, PWM);
   myservo.write(servoPWM);
@@ -93,7 +79,8 @@ void printDist() // FUnktionen der udskriver på serial monitor
   {
     digitalWrite(13, HIGH);
   }
-
+tid = millis();
+delay(1000);
 
 }
 
@@ -120,26 +107,31 @@ void transmit()
       digitalWrite(trig1Pin, LOW);
       digitalWrite(trig2Pin, LOW);
       delayMicroseconds(480);
-      prepareVariables();
+      measure();
     }
   }
 }
 
-void prepareVariables() 
-{
-  echo1Start = micros();          // startværdi, altså her echoPin går HØJ
-  echo2Start = echo1Start;
-  trigBool1 = false;              // booleans nulstilles
-  trigBool2 = false;
-  readyBool1 = false;
-  readyBool2 = false;
-  measure();
-}
 
-void measure()
-{
-  while (1)
-  {
+
+void measure() {
+
+  unsigned long echo1Start = micros();
+  unsigned long echo1Slut;
+  int echo1Time;
+
+  unsigned long echo2Start = micros();
+  unsigned long echo2Slut;
+  int echo2Time;
+
+  bool trigBool1 = false;
+  bool trigBool2 = false;
+
+  bool readyBool1 = false;
+  bool readyBool2 = false;
+
+
+  while (1) {
     int val1 = digitalRead(echo1Pin);
     int val2 = digitalRead(echo2Pin);
 
@@ -165,17 +157,10 @@ void measure()
     if (echo1Slut != 0 && echo2Slut != 0)                     // Er der målt en sluttid på begge sensorer, kaldes en funktion der udskriver distancer på Serial monitor
     {
       //Serial.println(9);
-
-      printDist();
+      echo1Time = echo1Slut - echo1Start;
+      echo2Time = echo2Slut - echo2Start;
+      printDist(echo1Time, echo2Time);
       break;                                                 // While loopet stoppes da målingerne er færdige
     }
   }
-
 }
-
-
-
-
-
-
-
