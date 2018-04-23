@@ -1,32 +1,33 @@
 /*
- * SKAL LAVES:
- * 
- * Indsættes kode i forhold til ultralyd
+   SKAL LAVES:
+
+   Indsættes kode i forhold til ultralyd
 */
+#include <Servo.h>
+#include <math.h>
 
-int motorPWMOutput;
-unsigned long errors[10];
-unsigned long accumulator;
-unsigned long PIDVal;
-int propVal;
-int intVal;
-int derVal;
-int divider;
-int distanceVal;
-float distanceReal;
+const int trig1Pin = 40;
+const int echo1Pin = 41;
+const int trig2Pin = 42;
+const int echo2Pin = 43;
+
+float distanceReal = 0;
+double motorPWMOutput;
+double servoOutput;
 
 
-
+Servo myservo;
 
 void setup() {
-  
-  Serial.begin(9600);
+  setupConfig();
 
 }
 
 void loop() {
-  findError();
-  PIDCal();
-
-
+  PIDMotor();
+  PIDSteering();
+  transmit();
+  if (millis() - tid > 1000) {
+    analogWrite(PWM_PIN, 0);
+  }
 }
