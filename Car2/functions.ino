@@ -1,6 +1,7 @@
 void findError() {
   int i = 0;
 
+distanceReal = VÆRDI FRA AFSTANDSSENSOR
 
   for (i = 9; i > 0; i--)
     errors[i] = errors[i - 1];
@@ -29,7 +30,7 @@ void PIDCal() {
     PIDVal = -126;
 
   //PWM output should be between 1 and 254 so we add to the PID
-  PWMOutput = PIDVal + 127;
+  motorPWMOutput = PIDVal + 127;
 
 }
 

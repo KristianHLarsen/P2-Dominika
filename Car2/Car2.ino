@@ -1,4 +1,10 @@
-int motorOutput;
+/*
+ * SKAL LAVES:
+ * 
+ * Indsættes kode i forhold til ultralyd
+*/
+
+int motorPWMOutput;
 unsigned long errors[10];
 unsigned long accumulator;
 unsigned long PIDVal;
@@ -13,8 +19,8 @@ float distanceReal;
 
 
 void setup() {
+  
   Serial.begin(9600);
-
 
 }
 
