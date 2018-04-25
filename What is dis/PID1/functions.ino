@@ -22,7 +22,7 @@ void setupConfig() {
   myservo.attach(9);
 }
 
-void printDist(int echo1Time, int echo2Time) // FUnktionen der udskriver på serial monitor
+void printDist(int echo1Time, int echo2Time) // Funktionen der udskriver vinkel og pwm 
 {
   double side1;
   double side2;
@@ -48,7 +48,7 @@ void printDist(int echo1Time, int echo2Time) // FUnktionen der udskriver på ser
   //Serial.println(theta);
   
 
-  distance = (echo1Time * 0.034 + echo2Time * 0.034) / 2;
+  distance = (echo1Time * 0.034 + echo2Time * 0.034) / 2; // Vi finder gennemsnit for den maalte afstand. 
   // Serial.println("Dist 1: " + String(echo1Time * 0.034));
   // Serial.println("Dist 2: " + String(echo2Time * 0.034));
   //Serial.print("Forskel: ");
@@ -61,12 +61,15 @@ void printDist(int echo1Time, int echo2Time) // FUnktionen der udskriver på ser
     servo1PID.Compute();
     servoPWM = map(servoPWM, 75,110, 110 ,75);
   }
-  Serial.println("Vinkel: " + String(angle));
-  Serial.println("PWM: " + String(servoPWM));
+ // Serial.println("Vinkel: " + String(angle));
+ // Serial.println("PWM: " + String(servoPWM));
  
 
   distancePID.Compute();
   analogWrite(PWM_PIN, PWM);
+  Serial.print("PWM for motor:   ");  Serial.println(PWM);
+  Serial.print("Distance:   "); Serial.println(distance);
+  
   myservo.write(servoPWM);
 
 
@@ -80,18 +83,18 @@ void printDist(int echo1Time, int echo2Time) // FUnktionen der udskriver på ser
     digitalWrite(13, HIGH);
   }
 tid = millis();
-delay(1000);
+//delay(1000);
 
 }
 
 void transmit()
 {
   int tal = analogRead(A10);   //Tjekker først om der modtages en puls. Når den puls slutter og går LOW fortsætter koden
-  while (tal > 900)
+  while (tal < 200)
   {
     tal = analogRead(A10);
 
-    if (tal < 800) {
+    if (tal > 800) {
       // Serial.println(1);
       digitalWrite(trig1Pin, LOW);
       digitalWrite(trig2Pin, LOW);
@@ -106,7 +109,7 @@ void transmit()
       delayMicroseconds(10);
       digitalWrite(trig1Pin, LOW);
       digitalWrite(trig2Pin, LOW);
-      delayMicroseconds(480);
+      delayMicroseconds(480);  //Soerger for at eliminere problemer med forsinkelse fra når der bliver triggeret et signal.
       measure();
     }
   }

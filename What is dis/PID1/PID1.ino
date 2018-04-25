@@ -34,15 +34,13 @@ void setup() {
 }
 
 void loop() {
-  Serial.println(analogRead(A10));
 
   transmit();
-  if (millis() - tid > 1000)
+  
+ 
+if (millis() - tid > 1000) // Tid bliver sat = millis hvergang at transmit koerer. 
   {
-
     analogWrite(PWM_PIN, 0);
-
-
   }
 
 }
