@@ -87,11 +87,11 @@ delay(1000);
 void transmit()
 {
   int tal = analogRead(A10);   //Tjekker først om der modtages en puls. Når den puls slutter og går LOW fortsætter koden
-  while (tal < 200)
+  while (tal > 900)
   {
     tal = analogRead(A10);
 
-    if (tal > 800) {
+    if (tal < 800) {
       // Serial.println(1);
       digitalWrite(trig1Pin, LOW);
       digitalWrite(trig2Pin, LOW);
@@ -164,3 +164,5 @@ void measure() {
     }
   }
 }
+
+

@@ -1,22 +1,96 @@
+
+
 void setupConfig() {
+  // put your setup code here, to run once:
   Serial.begin(9600);
   pinMode(trig1Pin, OUTPUT); // Sets the trigPin as an Output
   pinMode(echo1Pin, INPUT); // Sets the echoPin as an Input
   pinMode(trig2Pin, OUTPUT); // Sets the trigPin as an Output
   pinMode(echo2Pin, INPUT); // Sets the echoPin as an Input
   pinMode(13, OUTPUT);
-  pinMode(motorPWMpin, OUTPUT);
+  pinMode(PWM_PIN, OUTPUT);
+
+  distancePID.SetOutputLimits(0, 50);
+  servoPID.SetOutputLimits(110, 145);
+  servo1PID.SetOutputLimits(75, 110);
+  distancePID.SetMode(AUTOMATIC);
+  servoPID.SetMode(AUTOMATIC);
+  servo1PID.SetMode(AUTOMATIC);
+
   digitalWrite(13, LOW);
+
   myservo.attach(9);
 }
 
-void transmit() {
+void printDist(int echo1Time, int echo2Time) // FUnktionen der udskriver på serial monitor
+{
+  double side1;
+  double side2;
+  double side3;
+  double side4;
+  double theta;
+
+
+  side1 = (echo1Time * 0.034);
+  side2 = (echo2Time * 0.034);
+  side3 = (11.3);
+
+  side4 = sqrt(((2*((side1) * (side1))) + ((2*(side2) * (side2))) - ((side3) * (side3))) / 4);
+
+  theta = ((((side3 / 2) * (side3 / 2)) + ((side4) * (side4)) - ((side2) * (side2))) / (2 * (side3 / 2) * side4));
+
+  angle = ((acos(theta)) * (180 / 3.14159265));
+
+ //Serial.println(side1);
+ //Serial.println(side2);
+ //Serial.println(side3);
+  //Serial.println(side4);
+  //Serial.println(theta);
+  
+
+  distance = (echo1Time * 0.034 + echo2Time * 0.034) / 2;
+  // Serial.println("Dist 1: " + String(echo1Time * 0.034));
+  // Serial.println("Dist 2: " + String(echo2Time * 0.034));
+  //Serial.print("Forskel: ");
+  //Serial.println((echo1Time * 0.034 - echo2Time * 0.034));
+
+  if (angle < servoGoal && angle > 45) {
+    servoPID.Compute();
+  }
+  else if (angle > servoGoal && angle < 135 ) {
+    servo1PID.Compute();
+    servoPWM = map(servoPWM, 75,110, 110 ,75);
+  }
+  Serial.println("Vinkel: " + String(angle));
+  Serial.println("PWM: " + String(servoPWM));
+ 
+
+  distancePID.Compute();
+  analogWrite(PWM_PIN, PWM);
+  myservo.write(servoPWM);
+
+
+  if (distance > 25)
+  {
+    digitalWrite(13, LOW);
+  }
+
+  else if (distance <= 25)  //Hvis sensor 1 er tættere på end sensor 2 lyser pin 13 LED'en
+  {
+    digitalWrite(13, HIGH);
+  }
+tid = millis();
+delay(1000);
+
+}
+
+void transmit(){
   int tal = analogRead(A10);   //Tjekker først om der modtages en puls. Når den puls slutter og går LOW fortsætter koden
-  while (tal < 200)
+  while (tal > 900)
   {
     tal = analogRead(A10);
 
-    if (tal > 800) {
+    if (tal < 800) {
       // Serial.println(1);
       digitalWrite(trig1Pin, LOW);
       digitalWrite(trig2Pin, LOW);
@@ -36,6 +110,8 @@ void transmit() {
     }
   }
 }
+
+
 
 void measure() {
 
@@ -82,47 +158,10 @@ void measure() {
       //Serial.println(9);
       echo1Time = echo1Slut - echo1Start;
       echo2Time = echo2Slut - echo2Start;
-      distance = (echo1Time * 0.034 + echo2Time * 0.034) / 2;
+      printDist(echo1Time, echo2Time);
       break;                                                 // While loopet stoppes da målingerne er færdige
     }
   }
 }
 
-void PIDMotor(int propVal, int intVal, int derVal, int distanceVal) {
-
-  unsigned long errors[10];
-  unsigned long accumulator;
-  unsigned long PIDVal;
-
-  int i = 0;
-  int divider = 10;
-
-  propVal;
-  intVal;
-  derVal;
-
-  //finding error below
-
-  for (i = 9; i > 0; i--)
-    errors[i] = errors[i - 1];
-  // load new error into top array spot
-  errors[0] = (long)distanceVal - (long)distanceReal;
-
-  //calculating PID below
-
-  PIDVal = errors[0] * propVal;   // start with proportional gain
-  accumulator += errors[0];  // accumulator is sum of errors
-  PIDVal += intVal * accumulator; // add integral gain and error accumulation
-  PIDVal += derVal * (errors[0] - errors[9]); // differential gain comes next
-  PIDVal = PIDVal >> divider; // scale PID down with divider
-
-  if (PIDVal >= 127)
-    PIDVal = 127;
-  if (PIDVal <= -126)
-    PIDVal = -126;
-
-  //PWM output should be between 1 and 254 so we add to the PID
-  motorPWMOutput = PIDVal + 127;
-
-}
 

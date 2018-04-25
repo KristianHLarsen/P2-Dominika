@@ -3,13 +3,19 @@
 
 
 */
+int irPin = 4;
+const int trigPin = 6;
+const int echoPin = 7;
+
 
 void setup() {
-  // put your setup code here, to run once:
-
+  setupConfig();
+  
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  pulseLoop();
 
 }
+
+

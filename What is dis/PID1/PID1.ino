@@ -22,7 +22,7 @@ unsigned long tid;
 
 
 Servo myservo;
-PID distancePID(&distance, &PWM, &goal, 50, 0, 0, P_ON_E, REVERSE);
+PID distancePID(&distance, &PWM, &goal, 2, 0, 0, P_ON_E, REVERSE);
 PID servoPID(&angle, &servoPWM, &servoGoal, 1, 0, 0, P_ON_E, DIRECT);
 PID servo1PID(&angle, &servoPWM, &servoGoal, 1, 0, 0, P_ON_E, REVERSE);
 
@@ -34,6 +34,7 @@ void setup() {
 }
 
 void loop() {
+  Serial.println(analogRead(A10));
 
   transmit();
   if (millis() - tid > 1000)
