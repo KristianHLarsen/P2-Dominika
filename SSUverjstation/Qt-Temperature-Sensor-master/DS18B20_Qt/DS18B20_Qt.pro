@@ -13,8 +13,18 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        dialog.cpp
+        dialog.cpp \
+    ../../Qt-RGB-LED-master/Serial_RGB_Qt/dialog.cpp \
+    ../../Qt-RGB-LED-master/Serial_RGB_Qt/humi.cpp \
+    ../../Qt-RGB-LED-master/Serial_RGB_Qt/main.cpp \
+    ../../Qt-RGB-LED-master/Serial_RGB_Qt/readwritearduino.cpp \
+    ../../Qt-RGB-LED-master/Serial_RGB_Qt/sensor.cpp \
+    ../../Qt-RGB-LED-master/Serial_RGB_Qt/temp.cpp
 
-HEADERS  += dialog.h
+HEADERS  += dialog.h \
+    ../../Qt-RGB-LED-master/Serial_RGB_Qt/temp.h \
+    ../../Qt-RGB-LED-master/Serial_RGB_Qt/dialog.h \
+    ../../Qt-RGB-LED-master/Serial_RGB_Qt/humi_copy.h \
+    ../../Qt-RGB-LED-master/Serial_RGB_Qt/temp.h
 
 FORMS    += dialog.ui

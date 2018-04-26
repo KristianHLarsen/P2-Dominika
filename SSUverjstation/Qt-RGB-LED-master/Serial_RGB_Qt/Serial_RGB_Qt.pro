@@ -19,10 +19,7 @@ SOURCES += main.cpp\
     temp.cpp \
     humi.cpp
 
-HEADERS  += dialog.h \
-    readwritearduino.h \
-    sensor.h \
-    temp.h \
+HEADERS  += \
     humi.h
 
 FORMS    += dialog.ui
