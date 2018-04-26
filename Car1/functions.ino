@@ -6,7 +6,7 @@ void setupConfig() {
 }
 
 void pulseLoop() {
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < 100; i++) {
     digitalWrite(irPin, HIGH);
     delayMicroseconds(13);
     digitalWrite(irPin, LOW);
