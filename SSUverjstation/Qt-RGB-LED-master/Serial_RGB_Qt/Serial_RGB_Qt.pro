@@ -13,8 +13,16 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        dialog.cpp
+        dialog.cpp \
+    readwritearduino.cpp \
+    sensor.cpp \
+    temp.cpp \
+    humi.cpp
 
-HEADERS  += dialog.h
+HEADERS  += dialog.h \
+    readwritearduino.h \
+    sensor.h \
+    temp.h \
+    humi.h
 
 FORMS    += dialog.ui
