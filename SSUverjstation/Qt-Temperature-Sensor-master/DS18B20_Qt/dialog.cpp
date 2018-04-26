@@ -22,7 +22,7 @@ Dialog::Dialog(QWidget *parent) :
      *  Testing code, prints the description, vendor id, and product id of all ports.
      *  Used it to determine the values for the arduino uno.
      *
-     *
+     */
     qDebug() << "Number of ports: " << QSerialPortInfo::availablePorts().length() << "\n";
     foreach(const QSerialPortInfo &serialPortInfo, QSerialPortInfo::availablePorts()){
         qDebug() << "Description: " << serialPortInfo.description() << "\n";
@@ -31,7 +31,7 @@ Dialog::Dialog(QWidget *parent) :
         qDebug() << "Has product id?: " << serialPortInfo.hasProductIdentifier() << "\n";
         qDebug() << "Product ID: " << serialPortInfo.productIdentifier() << "\n";
     }
-    */
+
 
 
     /*
@@ -92,7 +92,7 @@ void Dialog::readSerial()
     //  Check to see if there less than 3 tokens in buffer_split.
     //  If there are at least 3 then this means there were 2 commas,
     //  means there is a parsed temperature value as the second token (between 2 commas)
-    if(buffer_split.length() < 3){
+    if(buffer_split.length() < 6){
         // no parsed value yet so continue accumulating bytes from serial in the buffer.
         serialData = arduino->readAll();
         serialBuffer = serialBuffer + QString::fromStdString(serialData.toStdString());
@@ -102,8 +102,11 @@ void Dialog::readSerial()
         serialBuffer = "";
         qDebug() << buffer_split << "\n";
         parsed_data = buffer_split[1];
-        temperature_value = (9/5.0) * (parsed_data.toDouble()) + 32; // convert to fahrenheit
+        temperature_value =  parsed_data.toDouble(); //vi gemmer temperaturvaerdi fra plads to paa parseren.
+        parsed_data = buffer_split[2];
+        humid_value = parsed_data.toDouble(); // vi gemmer humid vaerdi fra plads 3 paa parseren.
         qDebug() << "Temperature: " << temperature_value << "\n";
+        qDebug() << "Humid:  " << humid_value << "\n";
         parsed_data = QString::number(temperature_value, 'g', 4); // format precision of temperature_value to 4 digits or fewer
         Dialog::updateTemperature(parsed_data);
     }
