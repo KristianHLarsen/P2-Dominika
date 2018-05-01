@@ -1,90 +1,49 @@
-
-
 void setupConfig() {
-  // put your setup code here, to run once:
   Serial.begin(9600);
   pinMode(trig1Pin, OUTPUT); // Sets the trigPin as an Output
   pinMode(echo1Pin, INPUT); // Sets the echoPin as an Input
   pinMode(trig2Pin, OUTPUT); // Sets the trigPin as an Output
   pinMode(echo2Pin, INPUT); // Sets the echoPin as an Input
-  pinMode(13, OUTPUT);
   pinMode(PWM_PIN, OUTPUT);
-
-  distancePID.SetOutputLimits(0, 50);
-  servoPID.SetOutputLimits(110, 145);
-  servo1PID.SetOutputLimits(75, 110);
-  distancePID.SetMode(AUTOMATIC);
-  servoPID.SetMode(AUTOMATIC);
-  servo1PID.SetMode(AUTOMATIC);
-
-  digitalWrite(13, LOW);
 
   myservo.attach(9);
 }
 
-void printDist(int echo1Time, int echo2Time) // FUnktionen der udskriver på serial monitor
-{
-  double side1;
-  double side2;
-  double side3;
-  double side4;
-  double theta;
-
-
-  side1 = (echo1Time * 0.034);
-  side2 = (echo2Time * 0.034);
-  side3 = (11.3);
-
-  side4 = sqrt(((2*((side1) * (side1))) + ((2*(side2) * (side2))) - ((side3) * (side3))) / 4);
-
-  theta = ((((side3 / 2) * (side3 / 2)) + ((side4) * (side4)) - ((side2) * (side2))) / (2 * (side3 / 2) * side4));
-
-  angle = ((acos(theta)) * (180 / 3.14159265));
-
- //Serial.println(side1);
- //Serial.println(side2);
- //Serial.println(side3);
-  //Serial.println(side4);
-  //Serial.println(theta);
-  
-
-  distance = (echo1Time * 0.034 + echo2Time * 0.034) / 2;
-  // Serial.println("Dist 1: " + String(echo1Time * 0.034));
-  // Serial.println("Dist 2: " + String(echo2Time * 0.034));
-  //Serial.print("Forskel: ");
-  //Serial.println((echo1Time * 0.034 - echo2Time * 0.034));
-
-  if (angle < servoGoal && angle > 45) {
-    servoPID.Compute();
-  }
-  else if (angle > servoGoal && angle < 135 ) {
-    servo1PID.Compute();
-    servoPWM = map(servoPWM, 75,110, 110 ,75);
-  }
-  Serial.println("Vinkel: " + String(angle));
-  Serial.println("PWM: " + String(servoPWM));
- 
-
-  distancePID.Compute();
-  analogWrite(PWM_PIN, PWM);
-  myservo.write(servoPWM);
-
-
-  if (distance > 25)
-  {
-    digitalWrite(13, LOW);
-  }
-
-  else if (distance <= 25)  //Hvis sensor 1 er tættere på end sensor 2 lyser pin 13 LED'en
-  {
-    digitalWrite(13, HIGH);
-  }
-tid = millis();
-delay(1000);
-
+void GetError(void) {
+  byte i = 0;
+  // shift error values
+  for (i = 9; i > 0; i--)
+    Error[i] = Error[i - 1];
+  // load new error into top array spot
+  Error[0] = (long)distanceReal-(long)distanceGoal;
 }
 
-void transmit(){
+void CalculatePID(void) {
+  // Set constants here
+  PTerm = 200;
+  ITerm = 25;
+  DTerm = 100;
+  Divider = 10;
+
+  // Calculate the PID
+  PIDValue = Error[0] * PTerm;   // start with proportional gain
+  Accumulator += Error[0];  // accumulator is sum of errors
+  PIDValue += ITerm * Accumulator; // add integral gain and error accumulation
+  PIDValue += DTerm * (Error[0] - Error[9]); // differential gain comes next
+  PIDValue = PIDValue >> Divider; // scale PID down with divider
+
+  // limit the PID to the resolution we have for the PWM variable
+  if (PIDValue >= 127)
+    PIDValue = 127;
+  if (PIDValue <= -126)
+    PIDValue = -126;
+
+  //PWM output should be between 1 and 254 so we add to the PID
+  PWMOutput = PIDValue + 127;
+}
+
+
+void transmit() {
   int tal = analogRead(A10);   //Tjekker først om der modtages en puls. Når den puls slutter og går LOW fortsætter koden
   while (tal > 900)
   {
@@ -110,8 +69,6 @@ void transmit(){
     }
   }
 }
-
-
 
 void measure() {
 
@@ -153,12 +110,12 @@ void measure() {
       readyBool2 = true;
     }
 
-    if (echo1Slut != 0 && echo2Slut != 0)                     // Er der målt en sluttid på begge sensorer, kaldes en funktion der udskriver distancer på Serial monitor
+    if (echo1Slut != 0 && echo2Slut != 0)                     // Er der målt en sluttid på begge sensorer, kaldes en funktion der udskriver distanceRealr på Serial monitor
     {
       //Serial.println(9);
       echo1Time = echo1Slut - echo1Start;
       echo2Time = echo2Slut - echo2Start;
-      printDist(echo1Time, echo2Time);
+      distanceReal = (echo1Time * 0.034 + echo2Time * 0.034) / 2;
       break;                                                 // While loopet stoppes da målingerne er færdige
     }
   }
