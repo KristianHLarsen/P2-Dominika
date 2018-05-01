@@ -4,81 +4,92 @@ void setupConfig() {
   pinMode(echo1Pin, INPUT); // Sets the echoPin as an Input
   pinMode(trig2Pin, OUTPUT); // Sets the trigPin as an Output
   pinMode(echo2Pin, INPUT); // Sets the echoPin as an Input
-  pinMode(PWM_PIN, OUTPUT);
-
+  pinMode(motorPWMPin, OUTPUT);
+  pinMode(IRrecieverpin, INPUT);
   myservo.attach(9);
 }
 
-void GetError(void) {
-  byte i = 0;
-  // shift error values
-  for (i = 9; i > 0; i--)
-    Error[i] = Error[i - 1];
-  // load new error into top array spot
-  Error[0] = (long)distanceReal-(long)distanceGoal;
-}
+void motorPID() {
+  long motorError;
+  long motorPIDValue;
+  long accumulator;
 
-void CalculatePID(void) {
-  // Set constants here
-  PTerm = 200;
-  ITerm = 25;
-  DTerm = 100;
-  Divider = 10;
+  motorError = (long)distanceReal - (long)distanceGoal;
 
   // Calculate the PID
-  PIDValue = Error[0] * PTerm;   // start with proportional gain
-  Accumulator += Error[0];  // accumulator is sum of errors
-  PIDValue += ITerm * Accumulator; // add integral gain and error accumulation
-  PIDValue += DTerm * (Error[0] - Error[9]); // differential gain comes next
-  PIDValue = PIDValue >> Divider; // scale PID down with divider
+  motorPIDValue = motorError * motorPTerm;   // start with proportional gain
+  accumulator += motorError;  // accumulator is sum of motorErrors
+  //motorPIDValue += motorITerm * accumulator; // add integral gain and motorError accumulation
+  //motorPIDValue += motorDTerm * motorError; // differential gain comes next
 
   // limit the PID to the resolution we have for the PWM variable
-  if (PIDValue >= 127)
-    PIDValue = 127;
-  if (PIDValue <= -126)
-    PIDValue = -126;
+  if (motorPIDValue >= motorLimitMax)
+    motorPIDValue = motorLimitMax;
+  if (motorPIDValue <= motorLimitMin)
+    motorPIDValue = motorLimitMin;
 
   //PWM output should be between 1 and 254 so we add to the PID
-  PWMOutput = PIDValue + 127;
+  motorPWMOutput = motorPIDValue + motorLimitMax;
 }
 
+void servoPID() {
+  long servoError;
+  long servoPIDValue;
+  long accumulator;
 
-void transmit() {
-  int tal = analogRead(A10);   //Tjekker først om der modtages en puls. Når den puls slutter og går LOW fortsætter koden
-  while (tal > 900)
+  servoError = (long)directionReal - (long)directionGoal;
+
+  // Calculate the PID
+  servoPIDValue = servoError * servoPTerm;   // start with proportional gain
+  accumulator += servoError;  // accumulator is sum of servoErrors
+  //servoPIDValue += servoITerm * accumulator; // add integral gain and servoError accumulation
+  //servoPIDValue += servoDTerm * servoError; // differential gain comes next
+
+  // limit the PID to the resolution we have for the PWM variable
+  if (servoPIDValue >= servoLimitMax)
+    servoPIDValue = servoLimitMax;
+  if (servoPIDValue <= servoLimitMin)
+    servoPIDValue = servoLimitMin;
+
+  //PWM output should be between 1 and 254 so we add to the PID
+  servoPWMOutput = servoPIDValue + servoLimitMax;
+}
+
+void startFunction() {
+  if (digitalRead(4) == LOW)
   {
-    tal = analogRead(A10);
+    //Serial.println("jjj");
+    //digitalWrite(12,LOW);
+    delayMicroseconds(20);  //Soerger for at eliminere problemer med forsinkelse fra når der bliver triggeret et signal.
 
-    if (tal < 800) {
-      // Serial.println(1);
-      digitalWrite(trig1Pin, LOW);
-      digitalWrite(trig2Pin, LOW);
-
-
-      delayMicroseconds(2);
-      // Sets the trigPin on HIGH state for 10 micro seconds
-      digitalWrite(trig1Pin, HIGH);
-      digitalWrite(trig2Pin, HIGH);
+    // Serial.println(1);
+    digitalWrite(trig1Pin, LOW);
+    digitalWrite(trig2Pin, LOW);
 
 
-      delayMicroseconds(10);
-      digitalWrite(trig1Pin, LOW);
-      digitalWrite(trig2Pin, LOW);
-      delayMicroseconds(480);
-      measure();
-    }
+    delayMicroseconds(2);
+    // Sets the trigPin on HIGH state for 10 micro seconds
+    digitalWrite(trig1Pin, HIGH);
+    digitalWrite(trig2Pin, HIGH);
+
+
+    delayMicroseconds(10);
+    digitalWrite(trig1Pin, LOW);
+    digitalWrite(trig2Pin, LOW);
+    measureAndCalculate();
   }
 }
 
-void measure() {
+void measureAndCalculate() {
 
+  delayMicroseconds(800); //100
   unsigned long echo1Start = micros();
-  unsigned long echo1Slut;
-  int echo1Time;
+  unsigned long echo1Slut = 0;
+  unsigned long echo1Time;
 
   unsigned long echo2Start = micros();
-  unsigned long echo2Slut;
-  int echo2Time;
+  unsigned long echo2Slut = 0;
+  unsigned long echo2Time;
 
   bool trigBool1 = false;
   bool trigBool2 = false;
@@ -88,14 +99,14 @@ void measure() {
 
 
   while (1) {
-    int val1 = digitalRead(echo1Pin);
+    int val1 = digitalRead(echo1Pin); // Fortæller om echopin er høj eller lav
     int val2 = digitalRead(echo2Pin);
+    /*while (val1 == 0 && trigBool1 == false)       // While loop der sikrer at der ikke bliver målt en uhensigtsmæssig LOW, ved forsinkelse på modulet
+      {
+       val1 = digitalRead(echo1Pin);
+       val2 = digitalRead(echo2Pin);
 
-    while (val1 == 0 && trigBool1 == false)       // While loop der sikrer at der ikke bliver målt en uhensigtsmæssig LOW, ved forsinkelse på modulet
-    {
-      val1 = digitalRead(echo1Pin);
-      val2 = digitalRead(echo2Pin);
-    }
+      }*/
     trigBool1 = true;                             // boolean der bruges i firbindelse med ovenstående while-loop
 
     if (val1 == 0 && trigBool1 == true && readyBool1 == false) //Her går echo-porten LOW, og pulsen er derfor SLUT
@@ -110,15 +121,57 @@ void measure() {
       readyBool2 = true;
     }
 
-    if (echo1Slut != 0 && echo2Slut != 0)                     // Er der målt en sluttid på begge sensorer, kaldes en funktion der udskriver distanceRealr på Serial monitor
+    if (echo1Slut != 0 && echo2Slut != 0)                     // Er der målt en sluttid på begge sensorer, kaldes en funktion der udskriver distancer på Serial monitor
     {
       //Serial.println(9);
       echo1Time = echo1Slut - echo1Start;
       echo2Time = echo2Slut - echo2Start;
       distanceReal = (echo1Time * 0.034 + echo2Time * 0.034) / 2;
+
+      if (distanceReal < 100 && distanceReal > 10) {
+
+        //Debugging lines
+        //Serial.println("Sensor 1: " + String(echo1Time * 0.034) + "    Start: " + String(echo1Start) + "    Slut: " + String(echo1Slut));
+        //Serial.println("Sensor 2: " + String(echo2Time * 0.034) + "    Start: " + String(echo2Start) + "    Slut: " + String(echo2Slut));
+        //Serial.print("PWM: "); Serial.println(motorPWMOutput);
+        //Serial.print("Dist: "); Serial.println(distanceReal);
+
+        motorPID();   // Calculate the PID output for the motor
+        servoPID();   // Calculates the PID output for the servo
+
+        //Puts 4 different measurements into an array and calculates the avarage
+        float avarage[4];
+        int aCount = 0;
+        float difference = (echo1Time * 0.034 - echo2Time * 0.034);
+        avarage[aCount] = difference;
+        aCount++;
+        if (aCount == 4) {
+          //Serial.println(difference);
+          directionReal = (avarage[0] + avarage[1] + avarage[2] + avarage[3]) / 4;
+          // Serial.println(directionReal);
+          aCount = 0;
+        }
+
+      }
+      measureStarttime = millis();
+      delay(80);
       break;                                                 // While loopet stoppes da målingerne er færdige
     }
   }
 }
 
+void motorSecurity() {
+  //Makes sure the DC motor dosn't use a PWM signal under 20, because it's the minimal value for the motor to get running.
+  if (motorPWMOutput < 20) {
+    motorPWMOutput = 0;
+  }
+  analogWrite(motorPWMPin, motorPWMOutput);
+
+  //makes the car stop if no signal is received in 500 ms.
+  if (millis() - measureStarttime > 500)
+  {
+    motorPWMOutput = 0;
+    analogWrite(motorPWMPin, 0);
+  }
+}
 
