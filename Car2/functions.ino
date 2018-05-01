@@ -10,49 +10,49 @@ void setupConfig() {
 }
 
 void motorPID() {
-  long motorError;
-  long motorPIDValue;
+  long Error;
+  long PIDValue;
   long accumulator;
 
-  motorError = (long)distanceReal - (long)distanceGoal;
+  Error = (long)distanceReal - (long)distanceGoal;
 
   // Calculate the PID
-  motorPIDValue = motorError * motorPTerm;   // start with proportional gain
-  accumulator += motorError;  // accumulator is sum of motorErrors
-  //motorPIDValue += motorITerm * accumulator; // add integral gain and motorError accumulation
-  //motorPIDValue += motorDTerm * motorError; // differential gain comes next
+  PIDValue = Error * motorPTerm;   // start with proportional gain
+  accumulator += Error;  // accumulator is sum of Errors
+  //PIDValue += motorITerm * accumulator; // add integral gain and Error accumulation
+  //PIDValue += motorDTerm * Error; // differential gain comes next
 
   // limit the PID to the resolution we have for the PWM variable
-  if (motorPIDValue >= motorLimitMax)
-    motorPIDValue = motorLimitMax;
-  if (motorPIDValue <= motorLimitMin)
-    motorPIDValue = motorLimitMin;
+  if (PIDValue >= motorLimitMax)
+    PIDValue = motorLimitMax;
+  if (PIDValue <= motorLimitMin)
+    PIDValue = motorLimitMin;
 
   //PWM output should be between 1 and 254 so we add to the PID
-  motorPWMOutput = motorPIDValue + motorLimitMax;
+  motorPWMOutput = PIDValue + motorLimitMax;
 }
 
 void servoPID() {
-  long servoError;
-  long servoPIDValue;
+  long Error;
+  long PIDValue;
   long accumulator;
 
-  servoError = (long)directionReal - (long)directionGoal;
+  Error = (long)directionReal - (long)directionGoal;
 
   // Calculate the PID
-  servoPIDValue = servoError * servoPTerm;   // start with proportional gain
-  accumulator += servoError;  // accumulator is sum of servoErrors
-  //servoPIDValue += servoITerm * accumulator; // add integral gain and servoError accumulation
-  //servoPIDValue += servoDTerm * servoError; // differential gain comes next
+  PIDValue = Error * servoPTerm;   // start with proportional gain
+  accumulator += Error;  // accumulator is sum of Errors
+  //PIDValue += servoITerm * accumulator; // add integral gain and Error accumulation
+  //PIDValue += servoDTerm * Error; // differential gain comes next
 
   // limit the PID to the resolution we have for the PWM variable
-  if (servoPIDValue >= servoLimitMax)
-    servoPIDValue = servoLimitMax;
-  if (servoPIDValue <= servoLimitMin)
-    servoPIDValue = servoLimitMin;
+  if (PIDValue >= servoLimitMax)
+    PIDValue = servoLimitMax;
+  if (PIDValue <= servoLimitMin)
+    PIDValue = servoLimitMin;
 
   //PWM output should be between 1 and 254 so we add to the PID
-  servoPWMOutput = servoPIDValue + servoLimitMax;
+  servoPWMOutput = PIDValue + servoLimitMax;
 }
 
 void startFunction() {
