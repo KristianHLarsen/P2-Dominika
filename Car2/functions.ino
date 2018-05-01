@@ -33,13 +33,13 @@ void motorPID() {
 }
 
 void servoPID() {
-  long Error;
-  long PIDValue;
+  float Error;
+  float PIDValue;
   long accumulator;
 
   directionGoal=0;
 
-  Error = directionReal - (long)directionGoal;
+  Error = directionReal - float(directionGoal);
 
   // Calculate the PID
   PIDValue = Error * servoPTerm;   // start with proportional gain
@@ -48,11 +48,12 @@ void servoPID() {
   //PIDValue += servoDTerm * Error; // differential gain comes next
 
   // limit the PID to the resolution we have for the PWM variable
+  /*
   if (PIDValue >= servoLimitMax)
     PIDValue = servoLimitMax;
   if (PIDValue <= servoLimitMin)
     PIDValue = servoLimitMin;
-
+*/
   //PWM output should be between 1 and 254 so we add to the PID
   servoPWMOutput = PIDValue;
 }
@@ -166,7 +167,7 @@ void motorControl() {
   }
   analogWrite(motorPWMPin, motorPWMOutput);
 
-  servoVal = map(servoPWMOutput, 100, 200, 145, 75);     // scale it to use it with the servo (value between 0 and 180)
+  servoVal = map(servoPWMOutput, -20, 25, 130, 90);     // scale it to use it with the servo (value between 0 and 180)
   myservo.write(servoVal);                  // sets the servo position according to the scaled value
 
   //makes the car stop if no signal is received in 500 ms.
