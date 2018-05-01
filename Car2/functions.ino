@@ -29,7 +29,7 @@ void motorPID() {
     PIDValue = motorLimitMin;
 
   //PWM output should be between 1 and 254 so we add to the PID
-  motorPWMOutput = PIDValue + motorLimitMax;
+  motorPWMOutput = PIDValue + 18;
 }
 
 void servoPID() {
@@ -37,7 +37,9 @@ void servoPID() {
   long PIDValue;
   long accumulator;
 
-  Error = (long)directionReal - (long)directionGoal;
+  directionGoal=0;
+
+  Error = directionReal - (long)directionGoal;
 
   // Calculate the PID
   PIDValue = Error * servoPTerm;   // start with proportional gain
@@ -52,11 +54,11 @@ void servoPID() {
     PIDValue = servoLimitMin;
 
   //PWM output should be between 1 and 254 so we add to the PID
-  servoPWMOutput = PIDValue + servoLimitMax;
+  servoPWMOutput = PIDValue;
 }
 
 void startFunction() {
-  if (digitalRead(4) == LOW)
+  if (digitalRead(IRrecieverpin) == LOW)
   {
     //Serial.println("jjj");
     //digitalWrite(12,LOW);
@@ -133,25 +135,22 @@ void measureAndCalculate() {
         //Debugging lines
         //Serial.println("Sensor 1: " + String(echo1Time * 0.034) + "    Start: " + String(echo1Start) + "    Slut: " + String(echo1Slut));
         //Serial.println("Sensor 2: " + String(echo2Time * 0.034) + "    Start: " + String(echo2Start) + "    Slut: " + String(echo2Slut));
-        //Serial.print("PWM: "); Serial.println(motorPWMOutput);
+        Serial.print("PWM: "); Serial.println(servoPWMOutput);
         //Serial.print("Dist: "); Serial.println(distanceReal);
 
         motorPID();   // Calculate the PID output for the motor
         servoPID();   // Calculates the PID output for the servo
 
         //Puts 4 different measurements into an array and calculates the avarage
-        float avarage[4];
-        int aCount = 0;
         float difference = (echo1Time * 0.034 - echo2Time * 0.034);
         avarage[aCount] = difference;
         aCount++;
         if (aCount == 4) {
           //Serial.println(difference);
           directionReal = (avarage[0] + avarage[1] + avarage[2] + avarage[3]) / 4;
-          // Serial.println(directionReal);
+          Serial.println(directionReal);
           aCount = 0;
         }
-
       }
       measureStarttime = millis();
       delay(80);
@@ -160,12 +159,15 @@ void measureAndCalculate() {
   }
 }
 
-void motorSecurity() {
+void motorControl() {
   //Makes sure the DC motor dosn't use a PWM signal under 20, because it's the minimal value for the motor to get running.
   if (motorPWMOutput < 20) {
     motorPWMOutput = 0;
   }
   analogWrite(motorPWMPin, motorPWMOutput);
+
+  servoVal = map(servoPWMOutput, 100, 200, 145, 75);     // scale it to use it with the servo (value between 0 and 180)
+  myservo.write(servoVal);                  // sets the servo position according to the scaled value
 
   //makes the car stop if no signal is received in 500 ms.
   if (millis() - measureStarttime > 500)
