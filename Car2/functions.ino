@@ -146,7 +146,7 @@ void measureAndCalculate() {
         float difference = (echo1Time * 0.034 - echo2Time * 0.034);
         avarage[aCount] = difference;
         aCount++;
-        if (aCount == 4) {
+        if (aCount == 2) {
           //Serial.println(difference);
           directionReal = (avarage[0] + avarage[1] + avarage[2] + avarage[3]) / 4;
           Serial.println(directionReal);
@@ -167,7 +167,7 @@ void motorControl() {
   }
   analogWrite(motorPWMPin, motorPWMOutput);
 
-  servoVal = map(servoPWMOutput, -20, 25, 130, 90);     // scale it to use it with the servo (value between 0 and 180)
+  servoVal = map(servoPWMOutput, -20, 25, 135, 85);     // scale it to use it with the servo (value between 0 and 180)
   myservo.write(servoVal);                  // sets the servo position according to the scaled value
 
   //makes the car stop if no signal is received in 500 ms.
