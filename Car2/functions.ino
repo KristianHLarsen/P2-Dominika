@@ -7,6 +7,8 @@ void setupConfig() {
   pinMode(motorPWMPin, OUTPUT);
   pinMode(IRrecieverpin, INPUT);
   myservo.attach(9);
+  pinMode(directionPin,OUTPUT);
+  digitalWrite(directionPin,HIGH);
 }
 
 void motorPID() {
@@ -43,7 +45,7 @@ void servoPID() {
 
   // Calculate the PID
   PIDValue = Error * servoPTerm;   // start with proportional gain
-  accumulator += Error;  // accumulator is sum of Errors
+  //accumulator += Error;  // accumulator is sum of Errors
   //PIDValue += servoITerm * accumulator; // add integral gain and Error accumulation
   //PIDValue += servoDTerm * Error; // differential gain comes next
 
@@ -167,7 +169,7 @@ void motorControl() {
   }
   analogWrite(motorPWMPin, motorPWMOutput);
 
-  servoVal = map(servoPWMOutput, -20, 25, 135, 85);     // scale it to use it with the servo (value between 0 and 180)
+  servoVal = map(servoPWMOutput, -20, 25, 85, 135);     // scale it to use it with the servo (value between 0 and 180)
   myservo.write(servoVal);                  // sets the servo position according to the scaled value
 
   //makes the car stop if no signal is received in 500 ms.

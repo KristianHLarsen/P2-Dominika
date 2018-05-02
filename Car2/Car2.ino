@@ -9,10 +9,10 @@ int motorITerm = 0;
 int motorDTerm = 0;
 int motorLimitMax = 18;
 int motorLimitMin = -17;
-int distanceGoal = 30;
+int distanceGoal = 40;
 
 //PID input for servo
-double directionReal;
+float directionReal;
 float servoPWMOutput;
 int servoPTerm = 5;
 int servoITerm = 0;
@@ -23,12 +23,13 @@ int directionGoal;
 int servoVal;
 
 //Pin configuration for all devices
-const int trig1Pin = 40;
-const int echo1Pin = 41;
-const int trig2Pin = 42;
-const int echo2Pin = 43;
-int motorPWMPin = 7;
-int IRrecieverpin = 4;
+const int trig1Pin = 52;
+const int echo1Pin = 53;
+const int trig2Pin = 22;
+const int echo2Pin = 23;
+int directionPin = 7;
+int motorPWMPin = 6;
+int IRrecieverpin = 5;
 
 float avarage[4];
 int aCount = 0;
