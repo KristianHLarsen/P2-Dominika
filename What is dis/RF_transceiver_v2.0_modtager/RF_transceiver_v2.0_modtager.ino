@@ -14,6 +14,18 @@ int pwmpin = 6;
 int motorSpeed; // midsteværdi 25 dog maks. 255
 int servoVal;
 
+int irPin = 4;
+const int trigPin = 5;
+const int echoPin = 7;
+
+
+// defines variables
+long duration;
+int distance;
+int start = 0;
+int slut = 0;
+
+
 
 Servo myservo;  
 
