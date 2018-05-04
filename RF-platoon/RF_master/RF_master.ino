@@ -6,12 +6,11 @@ int inputSM;       // input serial monitor
 #define INCHAR 20  //size of array for characters coming in
 char inString[INCHAR];
 byte outString[OUTCHAR];
-float tStart;
-float tStop;
-float tReak;
-int test;
+int carStatus = 1; //1 = good to go,    0 = Car has stopped
+
 
 void setup  () {
+  pinMode(3, INPUT_PULLUP);
   Serial.begin(9600);
   Serial.setTimeout(30000);
   Serial3.begin(9600);
@@ -20,9 +19,34 @@ void setup  () {
   Serial.flush();
 }
 
-void transmit()
+void receiveString() {
+  if (Serial3.available() > 0 )
+  {
+    int modtaget;
+    modtaget = Serial3.readBytesUntil('/', inString, INCHAR); //break karakter = 10 =return
+    Serial3.flush();
+    String str = String(inString);
+    char startChar = str.charAt(0);
+    if (startChar == '=') {
+      splitUp(str, modtaget);
+    }
+    Serial.flush();
+  }
+}
+
+
+void splitUp(String A, int modtaget )
 {
-  outString[0] = 1;
+  int startSeperator = A.indexOf('=') + 1;
+  int slutSeperator = A.indexOf('!');
+  String sub1 = A.substring(startSeperator, slutSeperator);
+  int value = sub1.toInt();
+  Serial.print("Modtaget: "); Serial.print(value); Serial.println();
+}
+
+void transmit1()
+{
+  outString[0] = carStatus;
   String tal = '#' + String(outString[0]) + '!' + '/';
   Serial3.print(tal);    // sender det der blev skrevet i serial monitor over RF
   Serial3.flush();
@@ -32,51 +56,28 @@ void transmit()
   delay(10);
 }
 
-void receiveString2() {
-  if (Serial3.available() > 0 )
-  {
-    char a = Serial3.read();
-    if (a == '=') {
-      int modtaget;
-      modtaget = Serial3.readBytesUntil('/', inString, INCHAR); //break karakter = 10 =return
-      Serial3.flush();
-      String str = String(inString);
-      splitUp(str, modtaget);
-      Serial.flush();
-    }
+void transmit2 ()  {
+  if (digitalRead(3) == LOW) {
+    carStatus = 0;
+    outString[0] = carStatus;
+    String tal = '#' + String(outString[0]) + '!' + '/';
+    Serial3.print(tal);    // sender det der blev skrevet i serial monitor over RF
+    Serial3.flush();
+    Serial.print("Sendt: ");
+    Serial.print(tal);
+    Serial.println();
+    delay(10);
   }
-  else  {
-    //do nothing
+  else {
+    carStatus = 1;
   }
-}
-
-void splitUp(String A, int modtaget )
-{
-  int seperatorEt = A.indexOf('?');
-  String sub1 = A.substring(0, seperatorEt);
-  //test = sub1.toInt(); 
-  //Serial.println("Modtaget: " + String(test));
-  Serial.println("Modtaget: " + String(sub1));
-}
-
-void timer()  {
-  transmit();
-  tStart = micros(); // Time in milliseconds since start
-  receiveString2();
-  while (Serial3.available() == 0)  {
-    //No code - just busy waiting
-  }
-  tStop = micros(); // Time in milliseconds since stop
-  tReak =  tStop - tStart;
-  Serial.print("Forsinkelse: ");
-  Serial.print(tReak);  Serial.print(" micro s");
-  Serial.println();
-  Serial.println();
 }
 
 void loop()
 {
-  timer();
-  delay(1000);
+  receiveString();
+  transmit2();
+  transmit1();
+  delay(5);
 }
 
