@@ -86,11 +86,11 @@ void splitUp(String A )
   int PWM_Servo = sub2.toInt();
   int DIR_H_bridge = sub3.toInt();
 
-  Serial.println(PWM_H_bridge);
-  Serial.println(PWM_Servo);
-  Serial.println(DIR_H_bridge);
+  //Serial.println(PWM_H_bridge);
+ // Serial.println(PWM_Servo);
+  //Serial.println(DIR_H_bridge);
 
   servoControl(PWM_Servo);
-  motorControl(PWM_H_bridge, DIR_H_bridge);
+  motorControl(PWM_H_bridge);
 }
 
