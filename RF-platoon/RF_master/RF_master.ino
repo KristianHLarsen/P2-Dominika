@@ -6,9 +6,11 @@ int inputSM;       // input serial monitor
 #define INCHAR 20  //size of array for characters coming in
 char inString[INCHAR];
 byte outString[OUTCHAR];
-int test;
+int carStatus = 1; //1 = good to go,    0 = Car has stopped
+
 
 void setup  () {
+  pinMode(3, INPUT_PULLUP);
   Serial.begin(9600);
   Serial.setTimeout(30000);
   Serial3.begin(9600);
@@ -39,12 +41,12 @@ void splitUp(String A, int modtaget )
   int slutSeperator = A.indexOf('!');
   String sub1 = A.substring(startSeperator, slutSeperator);
   int value = sub1.toInt();
-  Serial.println("Modtaget: " + value);
+  Serial.print("Modtaget: "); Serial.print(value); Serial.println();
 }
 
-void transmit()
+void transmit1()
 {
-  outString[0] = 1;
+  outString[0] = carStatus;
   String tal = '#' + String(outString[0]) + '!' + '/';
   Serial3.print(tal);    // sender det der blev skrevet i serial monitor over RF
   Serial3.flush();
@@ -54,10 +56,28 @@ void transmit()
   delay(10);
 }
 
+void transmit2 ()  {
+  if (digitalRead(3) == LOW) {
+    carStatus = 0;
+    outString[0] = carStatus;
+    String tal = '#' + String(outString[0]) + '!' + '/';
+    Serial3.print(tal);    // sender det der blev skrevet i serial monitor over RF
+    Serial3.flush();
+    Serial.print("Sendt: ");
+    Serial.print(tal);
+    Serial.println();
+    delay(10);
+  }
+  else {
+    carStatus = 1;
+  }
+}
+
 void loop()
 {
   receiveString();
-  transmit();
-  delay(500);
+  transmit2();
+  transmit1();
+  delay(5);
 }
 
