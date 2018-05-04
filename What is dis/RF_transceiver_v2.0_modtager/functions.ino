@@ -1,5 +1,4 @@
 void setupConfig() {
-  Serial.begin(9600);
   pinMode(irPin, OUTPUT);
   pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
   pinMode(echoPin, INPUT); // Sets the echoPin as an Input
@@ -21,6 +20,8 @@ void triggerSignal() {
   digitalWrite(trigPin, HIGH);
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
-  delay(200);
+ 
+lastMillis = millis();
+// delay(200);
 }
 
