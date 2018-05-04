@@ -17,18 +17,6 @@ void setup  () {
   Serial.flush();
 }
 
-void transmit()
-{
-  outString[0] = 1;
-  String tal = '#' + String(outString[0]) + '!' + '/';
-  Serial3.print(tal);    // sender det der blev skrevet i serial monitor over RF
-  Serial3.flush();
-  Serial.print("Sendt: ");
-  Serial.print(tal);
-  Serial.println();
-  delay(10);
-}
-
 void receiveString() {
   if (Serial3.available() > 0 )
   {
@@ -50,15 +38,26 @@ void splitUp(String A, int modtaget )
   int startSeperator = A.indexOf('=') + 1;
   int slutSeperator = A.indexOf('!');
   String sub1 = A.substring(startSeperator, slutSeperator);
-  //test = sub1.toInt();
-  //Serial.println("Modtaget: " + String(test));
-  Serial.println("Modtaget: " + String(sub1));
+  int value = sub1.toInt();
+  Serial.println("Modtaget: " + value);
+}
+
+void transmit()
+{
+  outString[0] = 1;
+  String tal = '#' + String(outString[0]) + '!' + '/';
+  Serial3.print(tal);    // sender det der blev skrevet i serial monitor over RF
+  Serial3.flush();
+  Serial.print("Sendt: ");
+  Serial.print(tal);
+  Serial.println();
+  delay(10);
 }
 
 void loop()
 {
   receiveString();
   transmit();
-  delay(1000);
+  delay(500);
 }
 
