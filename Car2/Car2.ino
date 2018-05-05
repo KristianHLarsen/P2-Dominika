@@ -9,7 +9,7 @@ int motorITerm = 0;
 int motorDTerm = 0;
 int motorLimitMax = 18;
 int motorLimitMin = -17;
-int distanceGoal = 40;
+int distanceGoal = 35;
 
 //PID input for servo
 float directionReal;
