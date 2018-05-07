@@ -60,17 +60,21 @@ void loop()
   {
     receiveString();
   }
-  if ((millis() - RFmillis) < 300)  {
-    triggerSignal();
-  }
+  triggerSignal();
+}
+
+void stopNextCar()  {
+  
 }
 
 void receiveString() {
   if (Serial3.available() > 0 )
   {
+
     Serial3.readBytesUntil('/', instring, NRCHAR); //break karakter = 10 = return
     Serial3.flush();
     String str = String(instring);
+    Serial.print(str);
     char startChar = str.charAt(0);
     if (startChar == '=') {
       splitUp(str);
@@ -83,32 +87,29 @@ void receiveString() {
   }
 }
 
-  void splitUp(String A )
-  {
-    int startSeperator = A.indexOf('=') + 1;
-    int seperatorEt = A.indexOf('!');
-    int seperatorTo = A.indexOf('!', seperatorEt + 1);
-    int seperatorTre = A.indexOf('/');
-    String sub1 = A.substring(startSeperator, seperatorEt);
-    String sub2 = A.substring(seperatorEt + 1, seperatorTo);
-    String sub3 = A.substring(seperatorTo + 1, seperatorTre);
+void splitUp(String A )
+{
+  int startSeperator = A.indexOf('=') + 1;
+  int seperatorEt = A.indexOf('!');
+  int seperatorTo = A.indexOf('!', seperatorEt + 1);
+  int seperatorTre = A.indexOf('/');
+  String sub1 = A.substring(startSeperator, seperatorEt);
+  String sub2 = A.substring(seperatorEt + 1, seperatorTo);
+  String sub3 = A.substring(seperatorTo + 1, seperatorTre);
 
-    int PWM_H_bridge = sub1.toInt();
-    int PWM_Servo = sub2.toInt();
-    int carStop = sub3.toInt();
+  int PWM_H_bridge = sub1.toInt();
+  int PWM_Servo = sub2.toInt();
+  int carStop = sub3.toInt();
 
-    if ((millis() - RFmillis) < 300)  {
-      servoControl(PWM_Servo);
-      motorControl(PWM_H_bridge);
-    }
+  if ((millis() - RFmillis) < 300)  {
+    servoControl(PWM_Servo);
+    motorControl(PWM_H_bridge);
+  }
 
-    if (carStop == 0) {
+  if (carStop == 0) {
       analogWrite(pwmpin, 0);
       myservo.write(85);
+      stopNextCar();
     }
-    else {
-      carStop = 1;
-    }
-
-  }
+}
 
