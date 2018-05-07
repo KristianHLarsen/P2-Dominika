@@ -20,7 +20,6 @@ int irPin = 2;
 const int trigPin = 3;
 const int echoPin = 4;
 
-unsigned long RFmillis;
 long lastMillis;
 
 // defines variables
@@ -35,7 +34,6 @@ Servo myservo;
 
 void setup()
 {
-  RFmillis = millis();
   lastMillis = 0;
   Serial.begin(9600);
   Serial.setTimeout(30000);
@@ -60,9 +58,6 @@ void loop()
   {
     receiveString();
   }
-  if ((millis() - RFmillis) > 300)  {
-    
-  }
   triggerSignal();
 }
 
@@ -73,9 +68,10 @@ void receiveString() {
     Serial3.flush();
     String str = String(instring);
     splitUp(str);
-    RFmillis = millis();
   }
 }
+
+
 
 void splitUp(String A )
 {
@@ -85,6 +81,7 @@ void splitUp(String A )
   String sub1 = A.substring(0, seperatorEt);
   String sub2 = A.substring(seperatorEt + 1, seperatorTo);
   String sub3 = A.substring(seperatorTo + 1, seperatorTre);
+
   int PWM_H_bridge = sub1.toInt();
   int PWM_Servo = sub2.toInt();
   int DIR_H_bridge = sub3.toInt();
