@@ -1,7 +1,7 @@
 void servoControl(int servoVal) {
   //  servoVal = analogRead(A0);
 
-  servoVal = map(servoVal, 0, 1023, 55, 115);    // Maks 35-135 // scale it to use it with the servo (value between 0 and 180)
+  servoVal = map(servoVal, 0, 1023, 115, 55);    // Maks 35-135 // scale it to use it with the servo (value between 0 and 180)
   myservo.write(servoVal);                  // sets the servo position according to the scaled value
   delay(15);                           // waits for the servo to get there
 }
