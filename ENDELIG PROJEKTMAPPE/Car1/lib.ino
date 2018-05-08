@@ -40,5 +40,5 @@ void motorControl(int motorVal) {
   }
 
   analogWrite(pwmpin, motorSpeed);
-  Serial.println(motorSpeed);
+  Serial.println(""); Serial.print("Motorspeed: "); Serial.print(motorSpeed); Serial.println("");
 }

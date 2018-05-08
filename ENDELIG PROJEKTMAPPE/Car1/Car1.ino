@@ -64,7 +64,7 @@ void loop()
 void RFNextCar(int x)  {
   String tal = '#' + String(x) + '!' + '/';
   Serial3.print(tal);    // sender det der blev skrevet i serial monitor over RF
-  Serial.println(tal);
+  Serial.println(""); Serial.print("String sent to next car: "); Serial.print(tal); Serial.println("");
   Serial3.flush();
   delay(10);
 }
@@ -75,18 +75,18 @@ void receiveString() {
     Serial3.readBytesUntil('/', instring, NRCHAR); //break karakter = 10 = return
     Serial3.flush();
     String str = String(instring);
-    //Serial.print(str);
+    Serial.println(""); Serial.print("Received string: "); Serial.print(str); Serial.println("");
     char startChar = str.charAt(0);
     if (startChar == '=') {
       splitUp(str);
       RFmillis = millis(); //reset RFmillis
-      RFNextCar(1);
     }
   }
   else if ((millis() - RFmillis) > 300) {
     analogWrite(pwmpin, 0); //0 speed
     myservo.write(85);      //correct fault steering
     RFNextCar(0);
+    Serial.println(""); Serial.print("Lost connection for more than 300 ms"); Serial.println("");
   }
 }
 
@@ -104,10 +104,10 @@ void splitUp(String A )
   int PWM_Servo = sub2.toInt();
   int carStop = sub3.toInt();
 
-  if ((millis() - RFmillis) < 300)  {
+  if ((millis() - RFmillis) < 1000 && carStop != 0)  {
     servoControl(PWM_Servo);
     motorControl(PWM_H_bridge);
-    //RFNextCar(1);
+    RFNextCar(1);
   }
 
   if (carStop == 0) {
