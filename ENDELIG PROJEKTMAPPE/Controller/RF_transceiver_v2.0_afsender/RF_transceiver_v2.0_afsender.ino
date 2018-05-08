@@ -93,6 +93,7 @@ void WaitTransmit() {
   {
     transmit();
     endtime = millis();
+    delay(20);
   }
 }
 
