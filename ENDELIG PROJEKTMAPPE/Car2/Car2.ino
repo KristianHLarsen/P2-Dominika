@@ -13,7 +13,7 @@ int distanceGoal = 35;
 
 //PID input for servo
 float directionReal;
-float servoPWMOutput;
+float servoOutput;
 int servoPTerm = 5;
 int servoITerm = 0;
 int servoDTerm = 0;
@@ -29,12 +29,13 @@ const int trig2Pin = 22;
 const int echo2Pin = 23;
 int directionPin = 7;
 int motorPWMPin = 6;
-int IRrecieverpin = 5;
+int IRreceiverpin = 5;
 
+//Global variables for the avareage calculator that controls steering
 float avarage[4];
 int aCount = 0;
 
-
+//Global variable for the function that checks if any IR signal has been received
 unsigned long measureStarttime;
 
 Servo myservo;
