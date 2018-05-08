@@ -66,7 +66,7 @@ void RFNextCar(int x)  {
   Serial3.print(tal);    // sender det der blev skrevet i serial monitor over RF
   Serial.println(""); Serial.print("String sent to next car: "); Serial.print(tal); Serial.println("");
   Serial3.flush();
-  //delay(10);
+  delay(10);
 }
 
 void receiveString() {
@@ -75,19 +75,20 @@ void receiveString() {
     Serial3.readBytesUntil('/', instring, NRCHAR); //break karakter = 10 = return
     Serial3.flush();
     String str = String(instring);
-    Serial.println(""); Serial.print("Received string: "); Serial.print(str); Serial.println("");
+    //Serial.println(""); Serial.print("Received string: "); Serial.print(str); Serial.println("");
     char startChar = str.charAt(0);
     if (startChar == '=') {
+      Serial.println("HER");
       splitUp(str);
       RFmillis = millis(); //reset RFmillis
     }
   }
-  if ((millis() - RFmillis) > 300) {
+ /* if ((millis() - RFmillis) > 300) {
     analogWrite(pwmpin, 0); //0 speed
     myservo.write(85);      //correct fault steering
     RFNextCar(0);
     Serial.println(""); Serial.print("Lost connection for more than 300 ms"); Serial.println("");
- }
+ }*/
 }
 
 void splitUp(String A )
@@ -103,14 +104,16 @@ void splitUp(String A )
   int PWM_H_bridge = sub1.toInt();
   int PWM_Servo = sub2.toInt();
   int carStop = sub3.toInt();
-
+    Serial.println(carStop);
   if ( carStop != 0)  {
+        RFNextCar(1);
+Serial.println("STOP 1");
     servoControl(PWM_Servo);
     motorControl(PWM_H_bridge);
-    RFNextCar(1);
   }
 
   if (carStop == 0) {
+    Serial.println("STOP 0");
       analogWrite(pwmpin, 0);
       myservo.write(85);
       RFNextCar(0);

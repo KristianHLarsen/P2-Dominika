@@ -56,13 +56,14 @@ int value = receiveData();
    if (value == 1)
   {
     Serial.println("Her");
-    //startFunction();
-    //motorControl();
-  myservo.write(95); 
+    startFunction();
+    motorControl();
+ // myservo.write(95); 
   }
   
   if (value == 0)
   {
+    Serial.println("Ikke her");
     analogWrite(motorPWMPin, 0);
     myservo.write(125);
   }

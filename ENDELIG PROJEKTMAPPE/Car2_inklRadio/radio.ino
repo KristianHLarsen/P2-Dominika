@@ -12,7 +12,7 @@ int receiveData()
     //  Serial.println("Jeg er her");
     Serial3.readBytesUntil('/', inString, 4);
     String str = String(inString);
-    //Serial.println(str);
+    Serial.println(str);
     char startChar = str.charAt(0);
     if (startChar == '#')
     {

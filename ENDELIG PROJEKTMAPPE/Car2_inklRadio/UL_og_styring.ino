@@ -62,8 +62,12 @@ void servoPID() {
 
 void startFunction() {
   if (digitalRead(IRrecieverpin) == LOW)
+ // while(digitalRead(IRrecieverpin) == HIGH)
+  //{
+    
+  //}
   {
-    //Serial.println("jjj");
+    Serial.println("jjj");
     //digitalWrite(12,LOW);
     delayMicroseconds(20);  //Soerger for at eliminere problemer med forsinkelse fra når der bliver triggeret et signal.
 
@@ -128,7 +132,7 @@ void measureAndCalculate() {
 
     if (echo1Slut != 0 && echo2Slut != 0)                     // Er der målt en sluttid på begge sensorer, kaldes en funktion der udskriver distancer på Serial monitor
     {
-      //Serial.println(9);
+      Serial.println(9);
       echo1Time = echo1Slut - echo1Start;
       echo2Time = echo2Slut - echo2Start;
       distanceReal = (echo1Time * 0.034 + echo2Time * 0.034) / 2;
