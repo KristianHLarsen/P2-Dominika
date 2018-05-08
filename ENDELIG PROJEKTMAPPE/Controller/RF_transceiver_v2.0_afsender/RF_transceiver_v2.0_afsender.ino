@@ -96,15 +96,15 @@ void WaitTransmit() {
   }
 }
 
-void receive()
-{
-  if (Serial3.available() > 0) {
-  }
-  inputRF = Serial3.read();   //Serial 3 er koblet til RF modul
-  Serial.write(inputRF);      //Skriver til Serial monitor
-  Serial.println();
-  Serial.println("Modtaget data");
-}
+//void receive()
+//{
+//  if (Serial3.available() > 0) {
+//  }
+//  inputRF = Serial3.read();   //Serial 3 er koblet til RF modul
+//  Serial.write(inputRF);      //Skriver til Serial monitor
+//  Serial.println();
+//  Serial.println("Modtaget data");
+//}
 
 void loop()
 {
