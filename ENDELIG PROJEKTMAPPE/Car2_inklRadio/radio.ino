@@ -7,7 +7,7 @@ char inString[4];
 
 int receiveData()
 {
-  if (Serial3.available() > 0)
+  //if (Serial3.available() > 0)
   {
     //  Serial.println("Jeg er her");
     Serial3.readBytesUntil('/', inString, 4);

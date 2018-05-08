@@ -1,6 +1,11 @@
 //Inluding all the library for the servo
 #include <Servo.h>
 
+// Der skal rettes  hvor tit bil 2 modtager fra bil 1.  Den misser mange datapakker,
+//som gør at der er stor forsinkelse på at den reagere i forhold til hvordan man trykker på kill switch
+
+
+
 //PID input for DC motor
 double distanceReal;
 float motorPWMOutput;

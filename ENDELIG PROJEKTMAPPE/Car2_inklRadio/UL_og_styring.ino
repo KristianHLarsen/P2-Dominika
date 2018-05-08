@@ -61,11 +61,11 @@ void servoPID() {
 }
 
 void startFunction() {
-  if (digitalRead(IRrecieverpin) == LOW)
- // while(digitalRead(IRrecieverpin) == HIGH)
-  //{
+  //if (digitalRead(IRrecieverpin) == LOW)
+  while(digitalRead(IRrecieverpin) == HIGH)
+  {
     
-  //}
+  }
   {
     Serial.println("jjj");
     //digitalWrite(12,LOW);
