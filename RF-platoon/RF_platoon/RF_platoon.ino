@@ -4,7 +4,6 @@ int inputSM; // input serial monitor
 #define OUTCHAR 20
 char inString[INCHAR];
 byte outString[OUTCHAR];
-volatile bool carStop = false;
 
 void setup()
 {

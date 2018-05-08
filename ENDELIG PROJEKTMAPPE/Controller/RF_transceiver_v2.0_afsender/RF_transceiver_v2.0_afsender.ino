@@ -63,7 +63,7 @@ void carStopFunc()  { //Function for when the car is stoppen.
     lcd.print("STOP           ");
 
     outString[2] = 0; //Emergency "channel". outString[0] and outString[1] is servo and speed.
-    String tal = String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) + '/';
+    String tal = '=' + String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) + '/';
     Serial3.print(tal);    // sender det der blev skrevet i serial monitor over RF
     Serial3.flush();
     Serial.println(tal);
@@ -78,7 +78,7 @@ void transmit() {
     outString[1] = analogRead(0);
     outString[2] = 1; //when 0 is sent, car stops. When 1 is sent, car is in normal operation. 
 
-    String tal = String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) + '!' + '/';
+    String tal = '=' + String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) + '!' + '/';
     Serial3.print(tal);    // sender det der blev skrevet i serial monitor over RF
     Serial3.flush();
     Serial.println(tal);
