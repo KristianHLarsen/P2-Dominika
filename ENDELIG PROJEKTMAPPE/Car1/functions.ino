@@ -13,7 +13,7 @@ void triggerSignal() {
     delayMicroseconds(13);
   }
 
-  delayMicroseconds(300);    // Sikrer at modtageren altid sender ultralydssignal før afsenderen
+  delayMicroseconds(300);  // Sikrer at modtageren altid sender ultralydssignal før afsenderen
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
   // Sets the trigPin on HIGH state for 10 micro seconds
