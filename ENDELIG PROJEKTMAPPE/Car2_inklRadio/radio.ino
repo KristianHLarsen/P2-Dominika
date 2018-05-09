@@ -1,3 +1,8 @@
+/*
+ * Fil der står for at modtage radiosignaler, samt splitte det ordentligt op.
+ */
+
+
 void radioSetup()
 {
   Serial3.begin(9600);
@@ -5,7 +10,7 @@ void radioSetup()
 char inString[4];
 
 
-int receiveData()
+int receiveData() //Måske bare else(return 0;)?
 {
   //if (Serial3.available() > 0)
   {
@@ -21,13 +26,13 @@ int receiveData()
 
       // carStatus = carStatus.toInt();
 
-      if (carStatus == '0')
+      if (carStatus == '0')  // Returnerer 0 til loop hvis der modtages et 0
       {
         Serial.println("Status1: " + String(carStatus));
         //Serial.println("0");
         return 0;
       }
-      else if (carStatus == '1')
+      else if (carStatus == '1') // Returnerer 1 til loop hvis der modtages et 1
       {
                 Serial.println("Status2: " + String(carStatus));
 

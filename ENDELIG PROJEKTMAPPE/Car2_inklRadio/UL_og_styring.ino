@@ -1,3 +1,8 @@
+/*
+* I denne fil foretages der målinger på ultralydssensoren, samt styring af motorerne
+*/
+
+
 void setupConfig() {
   Serial.begin(9600);
   pinMode(trig1Pin, OUTPUT); // Sets the trigPin as an Output
@@ -62,7 +67,7 @@ void servoPID() {
 
 void startFunction() {
   //if (digitalRead(IRrecieverpin) == LOW)
-  while(digitalRead(IRrecieverpin) == HIGH)
+  while(digitalRead(IRrecieverpin) == HIGH) // Venter på at der bliver modtaget en puls på IR
   {
     
   }
@@ -91,7 +96,8 @@ void startFunction() {
 
 void measureAndCalculate() {
 
-  delayMicroseconds(800); //100
+  delayMicroseconds(800); //100 // Sikrer at der altid blier sendt signal afsted på afsendersiden først. Det er lidt uvist 
+                                // hvorfor, men der bliver et hav af fejlmålingerne ved lavere delay
   unsigned long echo1Start = micros();
   unsigned long echo1Slut = 0;
   unsigned long echo1Time;
@@ -149,6 +155,7 @@ void measureAndCalculate() {
         servoPID();   // Calculates the PID output for the servo
 
         //Puts 4 different measurements into an array and calculates the avarage
+        //Her benyttes kun en, så servoen rettes op efter hver måling
         float difference = (echo1Time * 0.034 - echo2Time * 0.034);
         avarage[aCount] = difference;
         aCount++;
