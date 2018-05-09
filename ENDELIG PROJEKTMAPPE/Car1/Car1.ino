@@ -1,6 +1,12 @@
 
 #include <Servo.h>
 
+/*
+ * Dette program modtager data fra controlleren, som den omregner til PWM værdier til motorerne, 
+ * hvorefter der afsendes data til bagvedkørende.
+ */
+
+
 int inputRF; //input Radio Frequency
 int inputSM; // input serial monitor
 #define NRCHAR 20
@@ -54,14 +60,14 @@ void setup()
 
 void loop()
 {
-  while (millis() - lastMillis < 200)
+  while (millis() - lastMillis < 200) // Der læses kun RF i 200 millisekudner, hvorefter der foretages en måling ved ultralyd
   {
-    receiveString();
+    receiveString(); // RF
   }
-  triggerSignal();
+  triggerSignal(); // ULTRALYD
 }
 
-void RFNextCar(int x)  {
+void RFNextCar(int x)  { // Funktionen der afsender data til næste bil. x er enten 1 eller 0
   String tal = '#' + String(x) + '!' + '/';
   Serial3.print(tal);    // sender det der blev skrevet i serial monitor over RF
   Serial.println(""); Serial.print("String sent to next car: "); Serial.print(tal); Serial.println("");
@@ -81,6 +87,9 @@ void receiveString() {
       splitUp(str);
       RFmillis = millis(); //reset RFmillis
     }
+
+    //Nedenstående funktion skal bruges til at stoppe bilen når den ikke har modtaget RF signal i 300 ms. 
+    //Den har dog givet udfordringer så den er kommenteret ud
   }
   /* if ((millis() - RFmillis) > 300) {
      analogWrite(pwmpin, 0); //0 speed

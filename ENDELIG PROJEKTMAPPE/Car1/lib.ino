@@ -1,3 +1,7 @@
+/*
+ * Denne fil styrer motorerne på bilen, med data fra controlleren
+ */
+
 void servoControl(int servoVal) {
   //  servoVal = analogRead(A0);
 

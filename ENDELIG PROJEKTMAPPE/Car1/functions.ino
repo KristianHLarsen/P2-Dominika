@@ -1,3 +1,7 @@
+/*
+ * Denne fil står for at afsende IR puls
+ */
+
 void setupConfig() {
   pinMode(irPin, OUTPUT);
   pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
