@@ -24,7 +24,7 @@ void triggerSignal() {
   digitalWrite(trigPin, HIGH);
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
- 
+ Serial.println("IR sendt");
 lastMillis = millis();
 // delay(200);
 }
