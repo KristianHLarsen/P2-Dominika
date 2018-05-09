@@ -1,6 +1,12 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
+/*
+ * Dette program kører på controlleren.
+ * Det afsender analogværdierne fra joysticks over RF modulet, hvorefter det udskrives på LCD
+ * Hvis stopknappen er trykket på, sendes der 0 som DC-motor-værdi, så bilen stopper.
+ */
+
 //MEGA
 int inputRF; //input Radio Frequency
 int inputSM; // input serial monitor
@@ -87,8 +93,8 @@ void transmit() {
 }
 
 void WaitTransmit() {
-  int starttime = millis();
-  int endtime = starttime;
+  unsigned long starttime = millis();
+  unsigned long endtime = starttime;
   while ((endtime - starttime) <= 120) // do this loop for up to 1000mS
   {
     transmit();
