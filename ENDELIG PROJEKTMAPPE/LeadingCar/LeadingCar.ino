@@ -84,6 +84,8 @@ void receiveString() {
     if (startChar == '=') {                        //If the start-character is correct, proceed to analyze the data.
       splitUp(str);                                //split up the received string
     }
+  }
+}
 
 void splitUp(String A ) //Function for splitting up the received string. Using seperators, it makes 3 substrings and converts them to ints. 
 {
