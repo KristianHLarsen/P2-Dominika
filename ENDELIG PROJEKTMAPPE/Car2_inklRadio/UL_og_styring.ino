@@ -67,12 +67,15 @@ void servoPID() {
 
 void startFunction() {
   //if (digitalRead(IRrecieverpin) == LOW)
+  StopFunction();
+  
   while(digitalRead(IRrecieverpin) == HIGH) // Venter på at der bliver modtaget en puls på IR
   {
-    
   }
   {
-    Serial.println("jjj");
+    Serial.println("Starttid for StartFunction");
+    Serial.println(millis());
+    //Serial.println("Startfunction started");
     //digitalWrite(12,LOW);
     delayMicroseconds(20);  //Soerger for at eliminere problemer med forsinkelse fra når der bliver triggeret et signal.
 
@@ -90,6 +93,7 @@ void startFunction() {
     delayMicroseconds(10);
     digitalWrite(trig1Pin, LOW);
     digitalWrite(trig2Pin, LOW);
+    StopFunction();
     measureAndCalculate();
   }
 }
@@ -114,6 +118,7 @@ void measureAndCalculate() {
 
 
   while (1) {
+    StopFunction();
     int val1 = digitalRead(echo1Pin); // Fortæller om echopin er høj eller lav
     int val2 = digitalRead(echo2Pin);
     /*while (val1 == 0 && trigBool1 == false)       // While loop der sikrer at der ikke bliver målt en uhensigtsmæssig LOW, ved forsinkelse på modulet
@@ -138,7 +143,7 @@ void measureAndCalculate() {
 
     if (echo1Slut != 0 && echo2Slut != 0)                     // Er der målt en sluttid på begge sensorer, kaldes en funktion der udskriver distancer på Serial monitor
     {
-      Serial.println(9);
+      //Serial.println(9);
       echo1Time = echo1Slut - echo1Start;
       echo2Time = echo2Slut - echo2Start;
       distanceReal = (echo1Time * 0.034 + echo2Time * 0.034) / 2;
@@ -148,7 +153,7 @@ void measureAndCalculate() {
         //Debugging lines
         //Serial.println("Sensor 1: " + String(echo1Time * 0.034) + "    Start: " + String(echo1Start) + "    Slut: " + String(echo1Slut));
         //Serial.println("Sensor 2: " + String(echo2Time * 0.034) + "    Start: " + String(echo2Start) + "    Slut: " + String(echo2Slut));
-        Serial.print("PWM: "); Serial.println(servoPWMOutput);
+        //Serial.print("PWM servo: "); Serial.println(servoPWMOutput);
         //Serial.print("Dist: "); Serial.println(distanceReal);
 
         motorPID();   // Calculate the PID output for the motor
@@ -168,6 +173,9 @@ void measureAndCalculate() {
       }
       measureStarttime = millis();
       delay(80);
+      Serial.println("Sluttid for StartFunction");
+      Serial.println(millis());
+      StopFunction();
       break;                                                 // While loopet stoppes da målingerne er færdige
     }
   }

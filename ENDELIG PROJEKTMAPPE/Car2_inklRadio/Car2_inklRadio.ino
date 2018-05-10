@@ -26,7 +26,7 @@ int motorITerm = 0;
 int motorDTerm = 0;
 int motorLimitMax = 18;
 int motorLimitMin = -17;
-int distanceGoal = 35;
+int distanceGoal = 25;
 
 //PID input for servo
 float directionReal;
@@ -51,9 +51,9 @@ int IRrecieverpin = 5;
 float avarage[4];
 int aCount = 0;
 
-
 unsigned long measureStarttime;
 
+int value;
 Servo myservo;
 
 void setup() {
@@ -64,25 +64,39 @@ void setup() {
   Serial3.begin(9600);
 }
 
+void StopFunction() {
+  if (Serial3.available() > 0)
+  {
+    value = receiveData();
+    if (value == 0) // Stopper bilen
+    {
+      Serial.println("StopCar = " + String(value));
+      analogWrite(motorPWMPin, 0);
+      myservo.write(125);
+    }
+    
+  }
+}
+
 void loop() {
 if(Serial3.available() > 0)
 {
-int value = receiveData();
-  Serial.println("Data: " + String(value));
+value = receiveData();
+  Serial.println("Data modtaget: " + String(value));
 
-   if (value == 1) // Platooner
+if (value == 0) // Stopper bilen
   {
-    Serial.println("Her");
-    startFunction();
-    motorControl();
- // myservo.write(95); 
-  }
-  
-  if (value == 0) // Stopper bilen
-  {
-    Serial.println("Ikke her");
+    //Serial.println("StopCar = 0");
     analogWrite(motorPWMPin, 0);
     myservo.write(125);
+  }
+  
+   if (value == 1) // Platooner
+  {
+    //Serial.println("StopCar = 1");
+    startFunction();
+    motorControl();
+    // myservo.write(95); 
   }
 }
 
