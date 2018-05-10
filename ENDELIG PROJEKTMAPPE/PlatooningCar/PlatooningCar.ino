@@ -2,7 +2,7 @@
 #include <Servo.h>
 
 // Der skal rettes  hvor tit bil 2 modtager fra bil 1.  Den misser mange datapakker,
-//som gør at der er stor forsinkelse på at den reagere i forhold til hvornår man trykker på kill switch
+// som gør at der er stor forsinkelse på at den reagere i forhold til hvornår man trykker på kill switch
 
 /* Dette er programmet der kører på arduino på følgebilen, altså bil nummer 2.
    I loop ventes der på at der modtages et signal fra bilen foran. Modtages der 0, stoppes bilen, og der
@@ -23,7 +23,6 @@ double distanceReal;
 float motorPWMOutput;
 int motorPTerm = 1;
 int motorITerm = 0;
-int motorDTerm = 0;
 int motorLimitMax = 18;
 int motorLimitMin = -17;
 int distanceGoal = 25;
@@ -33,7 +32,6 @@ float directionReal;
 float servoPWMOutput;
 int servoPTerm = 5;
 int servoITerm = 0;
-int servoDTerm = 0;
 int servoLimitMax = 200;
 int servoLimitMin = 100;
 int directionGoal;
@@ -67,14 +65,14 @@ void setup() {
 }
 
 void StopFunction() {
-  if (Serial3.available() > 0)
+  if (Serial3.available() > 0)    
   {
-    value = receiveData();
-    if (value == 0) // Stopper bilen
+    value = receiveData();        // Make a value with the int from receiveData() (either 0 or 1)
+    if (value == 0)               // If the stop-signal is received
     {
-      Serial.println("StopCar = " + String(value));
-      analogWrite(motorPWMPin, 0);
-      myservo.write(125);
+      Serial.println("StopCar = " + String(value));   // Serial print for debugging.  
+      analogWrite(motorPWMPin, 0);                    // Stop the car
+      myservo.write(125);                             // Correct the steering
     }
 
   }
@@ -84,21 +82,18 @@ void loop() {
   if (Serial3.available() > 0)
   {
     value = receiveData();
-    Serial.println("Data modtaget: " + String(value));
+    Serial.println("Data modtaget: " + String(value)); // Serial print for debugging
 
-    if (value == 0) // Stopper bilen
+    if (value == 0)                                    // If the stop-signal is received, stop the car and correct the steering
     {
-      //Serial.println("StopCar = 0");
-      analogWrite(motorPWMPin, 0);
-      myservo.write(125);
+      analogWrite(motorPWMPin, 0);                     // Stop the car
+      myservo.write(125);                              // Correct the steering
     }
 
-    if (value == 1) // Platooner
+    if (value == 1)                                    // If start-signal is received
     {
-      //Serial.println("StopCar = 1");
-      startFunction();
-      motorControl();
-      // myservo.write(95);
+      startFunction();                                 // Run the platooning-functions
+      motorControl();                                  // Run the motorcontrol
     }
   }
 
