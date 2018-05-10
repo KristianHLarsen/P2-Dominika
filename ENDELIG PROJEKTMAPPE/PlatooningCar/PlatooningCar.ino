@@ -5,17 +5,17 @@
 //som gør at der er stor forsinkelse på at den reagere i forhold til hvornår man trykker på kill switch
 
 /* Dette er programmet der kører på arduino på følgebilen, altså bil nummer 2.
- * I loop ventes der på at der modtages et signal fra bilen foran. Modtages der 0, stoppes bilen, og der 
- * lyttes efter nye RF signaler. 
- * Modtages der et 1 tal, begynder programmet at vente på at der bliver modtaget IR puls, 
- * som bruges til at synkronisere ultralydssensorerne.
- * Når ultralyd er afsendt, startes der en timer. Timeren stoppes når der modtages et 
- * signal på echoPin på den tilsvarende sensor.
- * Forskellen på de to afstande bruges til at regulere servomotoren, 
- * mens gennemsnittet af afstanden bruges til at syre DC-motoren
- * 
- * Bilen stopper hvis den ikke har modtaget RF signal indenfor 500 ms 
- */
+   I loop ventes der på at der modtages et signal fra bilen foran. Modtages der 0, stoppes bilen, og der
+   lyttes efter nye RF signaler.
+   Modtages der et 1 tal, begynder programmet at vente på at der bliver modtaget IR puls,
+   som bruges til at synkronisere ultralydssensorerne.
+   Når ultralyd er afsendt, startes der en timer. Timeren stoppes når der modtages et
+   signal på echoPin på den tilsvarende sensor.
+   Forskellen på de to afstande bruges til at regulere servomotoren,
+   mens gennemsnittet af afstanden bruges til at syre DC-motoren
+
+   Bilen stopper hvis den ikke har modtaget RF signal indenfor 500 ms
+*/
 
 
 //PID input for DC motor
@@ -48,9 +48,11 @@ int directionPin = 7;
 int motorPWMPin = 6;
 int IRrecieverpin = 5;
 
+//Global variables for the avareage calculator that controls steering
 float avarage[4];
 int aCount = 0;
 
+//Global variable for the function that checks if any IR signal has been received
 unsigned long measureStarttime;
 
 int value;
@@ -74,30 +76,30 @@ void StopFunction() {
       analogWrite(motorPWMPin, 0);
       myservo.write(125);
     }
-    
+
   }
 }
 
 void loop() {
-if(Serial3.available() > 0)
-{
-value = receiveData();
-  Serial.println("Data modtaget: " + String(value));
+  if (Serial3.available() > 0)
+  {
+    value = receiveData();
+    Serial.println("Data modtaget: " + String(value));
 
-if (value == 0) // Stopper bilen
-  {
-    //Serial.println("StopCar = 0");
-    analogWrite(motorPWMPin, 0);
-    myservo.write(125);
+    if (value == 0) // Stopper bilen
+    {
+      //Serial.println("StopCar = 0");
+      analogWrite(motorPWMPin, 0);
+      myservo.write(125);
+    }
+
+    if (value == 1) // Platooner
+    {
+      //Serial.println("StopCar = 1");
+      startFunction();
+      motorControl();
+      // myservo.write(95);
+    }
   }
-  
-   if (value == 1) // Platooner
-  {
-    //Serial.println("StopCar = 1");
-    startFunction();
-    motorControl();
-    // myservo.write(95); 
-  }
-}
 
 }

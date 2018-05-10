@@ -1,15 +1,19 @@
+/*
+  I denne fil foretages der målinger på ultralydssensoren, samt styring af motorerne
+*/
+
 //This function is configuring the different pins and devices.
 void setupConfig() {
   Serial.begin(9600);
-  pinMode(trig1Pin, OUTPUT); //Sets the trigPin as an Output.
-  pinMode(echo1Pin, INPUT); //Sets the echoPin as an Input.
-  pinMode(trig2Pin, OUTPUT); //Sets the trigPin as an Output.
-  pinMode(echo2Pin, INPUT); //Sets the echoPin as an Input.
-  pinMode(motorPWMPin, OUTPUT); //Sets the motorPWMPin as an Output.
-  pinMode(IRreceiverpin, INPUT); //Sets the IRreceiverpin as an Input.
-  myservo.attach(9); //Sets the servo for using pin 9 as signal pin.
-  pinMode(directionPin, OUTPUT); //Sets the directionPin as an Output.
-  digitalWrite(directionPin, HIGH); //Makes the directionPin go high so that the car is driving forward.
+  pinMode(trig1Pin, OUTPUT); // Sets the trigPin as an Output
+  pinMode(echo1Pin, INPUT); // Sets the echoPin as an Input
+  pinMode(trig2Pin, OUTPUT); // Sets the trigPin as an Output
+  pinMode(echo2Pin, INPUT); // Sets the echoPin as an Input
+  pinMode(motorPWMPin, OUTPUT);
+  pinMode(IRrecieverpin, INPUT);
+  myservo.attach(9);
+  pinMode(directionPin, OUTPUT);
+  digitalWrite(directionPin, HIGH);
 }
 
 //PID for the DC motor.
@@ -20,13 +24,13 @@ void motorPID() {
 
   Error = (long)distanceReal - (long)distanceGoal;
 
-  // Calculate the PID.
-  PIDValue = Error * motorPTerm;   // start with proportional gain.
-  accumulator += Error;  // accumulator is sum of Errors.
-  //PIDValue += motorITerm * accumulator; // add integral gain and Error accumulation.
-  //PIDValue += motorDTerm * Error; // differential gain comes next.
+  // Calculate the PID
+  PIDValue = Error * motorPTerm;   // start with proportional gain
+  accumulator += Error;  // accumulator is sum of Errors
+  //PIDValue += motorITerm * accumulator; // add integral gain and Error accumulation
+  //PIDValue += motorDTerm * Error; // differential gain comes next
 
-  // limit the PID to the resolution we have for the PWM variable.
+  //Limit the PID to the resolution we have for the PWM variable
   if (PIDValue >= motorLimitMax)
     PIDValue = motorLimitMax;
   if (PIDValue <= motorLimitMin)
@@ -46,29 +50,38 @@ void servoPID() {
 
   Error = directionReal - float(directionGoal);
 
-  // Calculate the PID.
-  PIDValue = Error * servoPTerm;   // start with proportional gain.
-  //accumulator += Error;  // accumulator is sum of Errors.
-  //PIDValue += servoITerm * accumulator; // add integral gain and Error accumulation.
-  //PIDValue += servoDTerm * Error; // differential gain comes next.
+  // Calculate the PID
+  PIDValue = Error * servoPTerm;   // start with proportional gain
+  //accumulator += Error;  // accumulator is sum of Errors
+  //PIDValue += servoITerm * accumulator; // add integral gain and Error accumulation
+  //PIDValue += servoDTerm * Error; // differential gain comes next
 
   //Here's the PID output for the servo.
-  servoOutput = PIDValue;
+  servoPWMOutput = PIDValue;
 }
 
 //This is the function that starts it all.
 void startFunction() {
+  StopFunction();
 
   //If the ir receiver gets a signal, it starts the function below which triggers a signal. This is because the HC-SR04 needs to send a signal, before it's echopin is ready to receive a signal.
-  if (digitalRead(IRreceiverpin) == LOW)
+  while (digitalRead(IRrecieverpin) == HIGH)
   {
+  }
+  {
+    Serial.println("Starttid for StartFunction");
+    Serial.println(millis());
+    //Serial.println("Startfunction started");
+    //digitalWrite(12,LOW);
     delayMicroseconds(20); //Eliminates problems with delays, when a signal is triggered.
+
+    // Serial.println(1);
     digitalWrite(trig1Pin, LOW);
     digitalWrite(trig2Pin, LOW);
 
 
     delayMicroseconds(2);
-    // Sets the trigPin on HIGH state for 10 micro seconds.
+    // Sets the trigPin on HIGH state for 10 micro seconds
     digitalWrite(trig1Pin, HIGH);
     digitalWrite(trig2Pin, HIGH);
 
@@ -76,6 +89,7 @@ void startFunction() {
     delayMicroseconds(10);
     digitalWrite(trig1Pin, LOW);
     digitalWrite(trig2Pin, LOW);
+    StopFunction();
 
     //After the echo is ready, the next function for measuring ultrasonic values are ready to run.
     measureAndCalculate();
@@ -85,7 +99,7 @@ void startFunction() {
 //This function is making the measurements of the distance and the steering values for the PIDs.
 void measureAndCalculate() {
 
-  delayMicroseconds(800); //This delay is here to make sure that the echopin has gone to low, before a signal is sent to Car2 from Car1.
+  delayMicroseconds(800); //This delay is here to make sure that the echopin has gone to low, before a signal is sent to Car2 from Car1. It's unknown why, but there a lot of unrealistic measurements at lower delay.
 
   //The start values for the variables is defined here.
   unsigned long echo1Start = micros();
@@ -104,6 +118,7 @@ void measureAndCalculate() {
 
 
   while (1) {
+    StopFunction();
     int val1 = digitalRead(echo1Pin); //Tells if the echopin is high or low.
     int val2 = digitalRead(echo2Pin);
 
@@ -132,20 +147,21 @@ void measureAndCalculate() {
       //If the distance is between 100 and 10, the code will move on from here. This is to eliminate all the flickering values, that will occur from the ultrasonic sensors.
       if (distanceReal < 100 && distanceReal > 10) {
 
-        //Debugging lines.
+        //Debugging lines
         //Serial.println("Sensor 1: " + String(echo1Time * 0.034) + "    Start: " + String(echo1Start) + "    End: " + String(echo1End));
         //Serial.println("Sensor 2: " + String(echo2Time * 0.034) + "    Start: " + String(echo2Start) + "    End: " + String(echo2End));
-        //Serial.print("PWM: "); Serial.println(servoOutput);
+        //Serial.print("PWM servo: "); Serial.println(servoPWMOutput);
         //Serial.print("Dist: "); Serial.println(distanceReal);
 
         motorPID();   //Calculate the PID output for the motor.
         servoPID();   //Calculates the PID output for the servo.
 
         //Puts 4 different measurements into an array and calculates the avarage.
-        float difference = (echo1Time * 0.034 - echo2Time * 0.034); //Calculates the difference between the two sensors, to make a direction value callede difference.
+        //Only one measurement is used here, so the servo is going back to idle after.
+        float difference = (echo1Time * 0.034 - echo2Time * 0.034);
 
         //With the difference between the two sensors the array is filled up with 4 values. After that an avarage is calculated which is the direction.
-        avarage[aCount] = difference;
+        avarage[aCount] = difference; //Calculates the difference between the two sensors, to make a direction value callede difference.
         aCount++;
         if (aCount == 1) {
           directionReal = (avarage[0] + avarage[1] + avarage[2] + avarage[3]) / 1;
@@ -155,11 +171,13 @@ void measureAndCalculate() {
       }
       measureStarttime = millis();
       delay(80);
-      break;                                                 // The while loop stops, because the measurements are done.
+      Serial.println("Endtid for StartFunction");
+      Serial.println(millis());
+      StopFunction();
+      break; //The while loop stops, because the measurements are done.
     }
   }
 }
-
 
 //This function makes sure all the mesured values, are being used for the motor and the servo.
 void motorControl() {
@@ -171,8 +189,8 @@ void motorControl() {
   //Here the motor is getting the signal, for it to start running.
   analogWrite(motorPWMPin, motorPWMOutput);
 
-  servoVal = map(servoOutput, -20, 25, 95, 125);     //Scales the value for the servo from the value that the PID calculates.
-  myservo.write(servoVal);                  //Sets the servo position according to the scaled value.
+  servoVal = map(servoPWMOutput, -20, 25, 95, 125); //Scales the value for the servo from the value that the PID calculates.
+  myservo.write(servoVal); //Sets the servo position according to the scaled value.
 
   //Makes the car stop if no signal is received in 500 ms.
   if (millis() - measureStarttime > 500)
