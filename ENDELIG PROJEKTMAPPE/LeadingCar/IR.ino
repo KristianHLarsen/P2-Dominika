@@ -1,11 +1,11 @@
 /*
- * Denne fil står for at afsende IR puls
+ * This file sends the IR-pulse. 
  */
 
 void setupConfig() {
   pinMode(irPin, OUTPUT);
-  pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
-  pinMode(echoPin, INPUT); // Sets the echoPin as an Input
+  pinMode(trigPin, OUTPUT);    // Sets the trigPin as an Output
+  pinMode(echoPin, INPUT);     // Sets the echoPin as an Input
 }
 
 void triggerSignal() {
@@ -17,15 +17,12 @@ void triggerSignal() {
     delayMicroseconds(13);
   }
 
-  delayMicroseconds(300);  // Sikrer at modtageren altid sender ultralydssignal før afsenderen
+  delayMicroseconds(300);      // Ensures that the receiving car always sends an ultrasonic signal before the sender. 
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
-  // Sets the trigPin on HIGH state for 10 micro seconds
-  digitalWrite(trigPin, HIGH);
+  digitalWrite(trigPin, HIGH); // Sets the trigPin on HIGH state for 10 micro seconds
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
- Serial.println("IR sendt");
-lastMillis = millis();
-// delay(200);
-}
+  Serial.println("IR sendt");  //serial print for debugging. 
+  lastMillis = millis();
 
