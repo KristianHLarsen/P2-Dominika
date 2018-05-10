@@ -1,6 +1,6 @@
 /*
- * Denne fil styrer motorerne på bilen, med data fra controlleren
- */
+   Denne fil styrer motorerne på bilen, med data fra controlleren
+*/
 
 void servoControl(int servoVal) {
   //  servoVal = analogRead(A0);
@@ -28,7 +28,7 @@ void motorControl(int motorVal) {
   }
   if (motorVal > 490 && motorVal < 510)
   {
-    motorSpeed = 0; 
+    motorSpeed = 0;
   }
   if (motorVal < 490) {
     digitalWrite(INa, HIGH);
@@ -42,7 +42,5 @@ void motorControl(int motorVal) {
       motorSpeed = 30;
     }
   }
-
   analogWrite(pwmpin, motorSpeed);
-  //Serial.println(""); Serial.print("Motorspeed: "); Serial.print(motorSpeed); Serial.println("");
 }
