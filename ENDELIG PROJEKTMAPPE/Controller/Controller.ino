@@ -2,7 +2,7 @@
 #include <LiquidCrystal_I2C.h>
 
 /*
-   This program runs on the controller..
+   This program runs on the controller.
    It transers the analog values from the joysticks with the RF module, and prints it to the LCD as well.
    If the stopbutton is pressed, 0 is sent as the DC-Motor value, so that the cars stop.
 */
@@ -18,8 +18,6 @@ int normal = 13;
 int motorSpeed;
 int outString[3];
 
-
-//String        tal = String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) + '/';
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 void setup()
@@ -31,24 +29,24 @@ void setup()
   Serial3.setTimeout(30000);
   Serial.flush();
   lcd.begin();
-  pinMode(carStop, INPUT_PULLUP); //pin for stopping the car
-  pinMode(normal, INPUT_PULLUP);  //pin is high for normal operation of car.
+  pinMode(carStop, INPUT_PULLUP);    //pin for stopping the car
+  pinMode(normal, INPUT_PULLUP);     //pin is high for normal operation of car.
 }
 
 void lcdPrint()  {
   if (digitalRead(normal) == HIGH) {
     if (analogRead(A1) > 510) {
-      motorSpeed = (0.153061 * (analogRead(A1) - 510));
+      motorSpeed = (0.153061 * (analogRead(A1) - 510));   // Conversion model between analog values (0-1023) and PWM (0-255) forward. 
     }
-    if (analogRead(A1) > 490 && analogRead(A1) < 510)
+    if (analogRead(A1) > 490 && analogRead(A1) < 510)     // If the joysticks are centered (not in use), do nothing
     {
       motorSpeed = 0;
     }
 
-    if (analogRead(A1) < 490)  {
+    if (analogRead(A1) < 490)  {                         // Conversion model between analog values (0-1023) and PWM (0-255) backward. 
       motorSpeed = (0.146199 * (analogRead(A1) - 490) * (-1));
     }
-    lcd.setCursor(12, 0);
+    lcd.setCursor(12, 0);                                // Printing values to the LCD
     lcd.print("    ");
     lcd.setCursor(12, 1);
     lcd.print("    ");
@@ -61,33 +59,30 @@ void lcdPrint()  {
   }
 }
 
-void carStopFunc()  { //Function for when the car is stopped.
-  if (digitalRead(carStop) == HIGH) { //If carStop pin is HIGH
-    lcd.setCursor(0, 0);    //Print "EMERGENCY STOP"
+void carStopFunc()  {                       //Function for when the car is stopped.
+  if (digitalRead(carStop) == HIGH) {       //If carStop pin is HIGH
+    lcd.setCursor(0, 0);                    //Print "EMERGENCY STOP" to the LCD. 
     lcd.print("EMERGENCY      ");
     lcd.setCursor(0, 1);
     lcd.print("STOP           ");
 
-    outString[2] = 0; //Emergency "channel". outString[0] and outString[1] is servo and speed.
+    outString[2] = 0;                       // Emergency "channel". outString[0] and outString[1] is servo and speed.
     String tal = '=' + String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) + '/';
-    Serial3.print(tal);    // sender det der blev skrevet i serial monitor over RF
+    Serial3.print(tal);                     // Sends the number with RF
     Serial3.flush();
-    Serial.println(tal);
     delay(10);
   }
 }
 
 void transmit() {
-  if  (digitalRead(normal) == HIGH) {
-
-    outString[0] = analogRead(1);
-    outString[1] = analogRead(0);
-    outString[2] = 1; //when 0 is sent, car stops. When 1 is sent, car is in normal operation.
+  if  (digitalRead(normal) == HIGH) {       // Normal operation
+    outString[0] = analogRead(1);           // Joystick for steering
+    outString[1] = analogRead(0);           // Joystick for speed
+    outString[2] = 1;                       // when 0 is sent, car stops. When 1 is sent, car is in normal operation.
 
     String tal = '=' + String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) + '!' + '/';
-    Serial3.print(tal);    //Sending what was written to the serial monitor by RF.
+    Serial3.print(tal);                     // Sending what was written to the serial monitor by RF.
     Serial3.flush();
-    Serial.println(tal);
     delay(10);
   }
 }
@@ -119,31 +114,3 @@ void loop()
   lcdPrint();
   carStopFunc();
 }
-
-/*
-  void receiveString() {
-
-  if (Serial3.available() > 0)
-  {
-    int modtaget;
-    Serial.println("Indtast en streng og slut med !");
-    modtaget = Serial3.readBytesUntil(10, inString, INCHAR); //break karakter til
-    Serial3.flush();
-    Serial.print("modtaget antal:  "); Serial.println(modtaget);
-    printString(inString); //som er &(instring[0]) = inString
-  }
-  }
-  void splitUp()
-  {
-  int seperatorEt = tal.indexOf('!');
-  int seperatorTo = tal.indexOf('!', seperatorEt + 1);
-  int seperatorTre = tal.indexOf('/');
-  String sub1 = tal.substring(0, seperatorEt);
-  String sub2 = tal.substring(seperatorEt + 1, seperatorTo);
-  String sub3 = tal.substring(seperatorTo + 1, seperatorTre);
-
-  Serial.println(sub1);
-  Serial.println(sub2);
-  Serial.println(sub3);
-  }
-*/
