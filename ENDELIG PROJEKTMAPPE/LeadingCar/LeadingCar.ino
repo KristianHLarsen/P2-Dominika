@@ -1,26 +1,27 @@
-
 #include <Servo.h>
 
 /*
- * Dette program modtager data fra controlleren, som den omregner til PWM værdier til motorerne, 
+ * Dette program bruges til førerbilen i platoonet. 
+ * Funktionen er at modtage data fra controlleren og sende en start- eller stopkommando videre
+ * til platooning-bilen. 
+ * Programmet modtager data fra controlleren, som den omregner til PWM-værdier til motorerne, 
  * hvorefter der afsendes data til bagvedkørende.
  */
 
 
-int inputRF; //input Radio Frequency
+int inputRF; // input Radio Frequency
 int inputSM; // input serial monitor
 #define NRCHAR 20
 #define OUTCHAR 100
 char instring[NRCHAR];
 byte outString[3] = {111, 22, 1};
-int carStop = 1; //car stop status. 1 = driving. 1 = STOP
+int carStop = 1; //carStop status. 1 = driving. 1 = STOP
 
 int motorVal;
-//int dirpin = 11;
 int INa = 7;
 int INb = 6;
 int pwmpin = 5;
-int motorSpeed; // midsteværdi 25 dog maks. 255
+int motorSpeed; //Motorspeed. Min. value: 30.  Max. value: 255
 int servoVal;
 
 int irPin = 2;
@@ -44,7 +45,6 @@ void setup()
   lastMillis = 0;
   Serial.begin(9600);
   Serial.setTimeout(30000);
-  //Serial.print("WR_433920_3_9_0_0");
   Serial3.begin(9600);
   Serial3.flush();
   Serial3.setTimeout(10000);
@@ -81,23 +81,11 @@ void receiveString() {
     Serial3.readBytesUntil('/', instring, NRCHAR); //break karakter = 10 = return
     Serial3.flush();
     String str = String(instring);
-    //Serial.println(""); Serial.print("Received string: "); Serial.print(str); Serial.println("");
     char startChar = str.charAt(0);
     if (startChar == '=') {
       splitUp(str);
       RFmillis = millis(); //reset RFmillis
     }
-
-    //Nedenstående funktion skal bruges til at stoppe bilen når den ikke har modtaget RF signal i 300 ms. 
-    //Den har dog givet udfordringer så den er kommenteret ud
-  }
-  /* if ((millis() - RFmillis) > 300) {
-     analogWrite(pwmpin, 0); //0 speed
-     myservo.write(85);      //correct fault steering
-     RFNextCar(0);
-     Serial.println(""); Serial.print("Lost connection for more than 300 ms"); Serial.println("");
-    }*/
-}
 
 void splitUp(String A )
 {
