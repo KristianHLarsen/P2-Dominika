@@ -2,10 +2,10 @@
 #include <LiquidCrystal_I2C.h>
 
 /*
- * Dette program kører på controlleren.
- * Det afsender analogværdierne fra joysticks over RF modulet, hvorefter det udskrives på LCD
- * Hvis stopknappen er trykket på, sendes der 0 som DC-motor-værdi, så bilen stopper.
- */
+   This program runs on the controller..
+   It transers the analog values from the joysticks with the RF module, and prints it to the LCD as well.
+   If the stopbutton is pressed, 0 is sent as the DC-Motor value, so that the cars stop.
+*/
 
 //MEGA
 int inputRF; //input Radio Frequency
@@ -61,7 +61,7 @@ void lcdPrint()  {
   }
 }
 
-void carStopFunc()  { //Function for when the car is stoppen.
+void carStopFunc()  { //Function for when the car is stopped.
   if (digitalRead(carStop) == HIGH) { //If carStop pin is HIGH
     lcd.setCursor(0, 0);    //Print "EMERGENCY STOP"
     lcd.print("EMERGENCY      ");
@@ -82,10 +82,10 @@ void transmit() {
 
     outString[0] = analogRead(1);
     outString[1] = analogRead(0);
-    outString[2] = 1; //when 0 is sent, car stops. When 1 is sent, car is in normal operation. 
+    outString[2] = 1; //when 0 is sent, car stops. When 1 is sent, car is in normal operation.
 
     String tal = '=' + String(outString[0]) + '!' + String(outString[1]) + '!' + String(outString[2]) + '!' + '/';
-    Serial3.print(tal);    // sender det der blev skrevet i serial monitor over RF
+    Serial3.print(tal);    //Sending what was written to the serial monitor by RF.
     Serial3.flush();
     Serial.println(tal);
     delay(10);
@@ -95,7 +95,7 @@ void transmit() {
 void WaitTransmit() {
   unsigned long starttime = millis();
   unsigned long endtime = starttime;
-  while ((endtime - starttime) <= 120) // do this loop for up to 1000mS
+  while ((endtime - starttime) <= 120) //Do this loop for up to 1000mS
   {
     transmit();
     endtime = millis();
@@ -107,8 +107,8 @@ void receive()
 {
   if (Serial3.available() > 0) {
   }
-  inputRF = Serial3.read();   //Serial 3 er koblet til RF modul
-  Serial.write(inputRF);      //Skriver til Serial monitor
+  inputRF = Serial3.read();   //Serial 3 is connected to RF module.
+  Serial.write(inputRF);      //Writing to serial monitor.
   Serial.println();
   Serial.println("Modtaget data");
 }
