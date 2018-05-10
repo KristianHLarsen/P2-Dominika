@@ -140,17 +140,20 @@ void measureAndCalculate() {
       //The distance is measured here.
       distanceReal = (echo1Time * 0.034 + echo2Time * 0.034) / 2;
 
-      //If the distance is between 100 and 10, the code will move on from here. This is to eliminate all the flickering values, that will occur from the ultrasonic sensors.
+      //If the distance is between 100 and 10, the code will move on from here. 
+      //This is to eliminate all the flickering values, that will occur from the ultrasonic sensors.
       if (distanceReal < 100 && distanceReal > 10) {
 
-        motorPID();   //Calculate the PID output for the motor.
-        servoPID();   //Calculates the PID output for the servo.
+        motorPID();                         //Calculate the PID output for the motor.
+        servoPID();                         //Calculates the PID output for the servo.
 
         //Puts 4 different measurements into an array and calculates the avarage.
         //Only one measurement is used here, so the servo is going back to idle after.
         float difference = (echo1Time * 0.034 - echo2Time * 0.034);
 
-        //With the difference between the two sensors the array is filled up with 4 values. After that an avarage is calculated which is the direction.
+        //With the difference between the two sensors the array is filled up with 4 values. 
+        //After that an avarage is calculated which is the direction.
+        
         avarage[aCount] = difference; //Calculates the difference between the two sensors, to make a direction value callede difference.
         aCount++;
         if (aCount == 1) {
@@ -164,7 +167,7 @@ void measureAndCalculate() {
       Serial.println("Endtid for StartFunction");
       Serial.println(millis());
       StopFunction();
-      break; //The while loop stops, because the measurements are done.
+      break;                           //The while loop stops, because the measurements are done.
     }
   }
 }
@@ -179,10 +182,10 @@ void motorControl() {
   //Here the motor is getting the signal, for it to start running.
   analogWrite(motorPWMPin, motorPWMOutput);
 
-  servoVal = map(servoPWMOutput, -20, 25, 95, 125); //Scales the value for the servo from the value that the PID calculates.
-  myservo.write(servoVal); //Sets the servo position according to the scaled value.
+  servoVal = map(servoPWMOutput, -20, 25, 95, 125);   //Scales the value for the servo from the value that the PID calculates.
+  myservo.write(servoVal);                            //Sets the servo position according to the scaled value.
 
-  //Makes the car stop if no signal is received in 500 ms.
+                                                      //Makes the car stop if no signal is received in 500 ms.
   if (millis() - measureStarttime > 500)
   {
     motorPWMOutput = 0;
