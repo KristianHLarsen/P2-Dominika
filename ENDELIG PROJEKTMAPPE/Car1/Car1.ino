@@ -1,6 +1,12 @@
 
 #include <Servo.h>
 
+/*
+ * Dette program modtager data fra controlleren, som den omregner til PWM værdier til motorerne, 
+ * hvorefter der afsendes data til bagvedkørende.
+ */
+
+
 int inputRF; //input Radio Frequency
 int inputSM; // input serial monitor
 #define NRCHAR 20
@@ -54,17 +60,17 @@ void setup()
 
 void loop()
 {
-  while (millis() - lastMillis < 200)
+  while (millis() - lastMillis < 200) // Der læses kun RF i 200 millisekudner, hvorefter der foretages en måling ved ultralyd
   {
-    receiveString();
+    receiveString(); // RF
   }
-  triggerSignal();
+  triggerSignal(); // ULTRALYD
 }
 
-void RFNextCar(int x)  {
+void RFNextCar(int x)  { // Funktionen der afsender data til næste bil. x er enten 1 eller 0
   String tal = '#' + String(x) + '!' + '/';
   Serial3.print(tal);    // sender det der blev skrevet i serial monitor over RF
-  Serial.println(tal);
+  Serial.println(""); Serial.print("String sent to next car: "); Serial.print(tal); Serial.println("");
   Serial3.flush();
   delay(10);
 }
@@ -75,19 +81,22 @@ void receiveString() {
     Serial3.readBytesUntil('/', instring, NRCHAR); //break karakter = 10 = return
     Serial3.flush();
     String str = String(instring);
-    //Serial.print(str);
+    //Serial.println(""); Serial.print("Received string: "); Serial.print(str); Serial.println("");
     char startChar = str.charAt(0);
     if (startChar == '=') {
       splitUp(str);
       RFmillis = millis(); //reset RFmillis
-      RFNextCar(1);
     }
+
+    //Nedenstående funktion skal bruges til at stoppe bilen når den ikke har modtaget RF signal i 300 ms. 
+    //Den har dog givet udfordringer så den er kommenteret ud
   }
-  else if ((millis() - RFmillis) > 300) {
-    analogWrite(pwmpin, 0); //0 speed
-    myservo.write(85);      //correct fault steering
-    RFNextCar(0);
-  }
+  /* if ((millis() - RFmillis) > 300) {
+     analogWrite(pwmpin, 0); //0 speed
+     myservo.write(85);      //correct fault steering
+     RFNextCar(0);
+     Serial.println(""); Serial.print("Lost connection for more than 300 ms"); Serial.println("");
+    }*/
 }
 
 void splitUp(String A )
@@ -99,22 +108,23 @@ void splitUp(String A )
   String sub1 = A.substring(startSeperator, seperatorEt);
   String sub2 = A.substring(seperatorEt + 1, seperatorTo);
   String sub3 = A.substring(seperatorTo + 1, seperatorTre);
-  
+
   int PWM_H_bridge = sub1.toInt();
   int PWM_Servo = sub2.toInt();
   int carStop = sub3.toInt();
 
-  if ((millis() - RFmillis) < 300)  {
+  if ( carStop != 0)  {
+    RFNextCar(1);
+    Serial.println(""); Serial.print("If Carstop = 1"); Serial.println("");
     servoControl(PWM_Servo);
     motorControl(PWM_H_bridge);
-    //RFNextCar(1);
   }
 
   if (carStop == 0) {
-      analogWrite(pwmpin, 0);
-      myservo.write(85);
-      RFNextCar(0);
-    }
-  
+    Serial.println(""); Serial.print("if Carstop = 0"); Serial.println("");
+    analogWrite(pwmpin, 0);
+    myservo.write(85);
+    RFNextCar(0);
+  }
 }
 

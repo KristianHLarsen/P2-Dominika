@@ -1,3 +1,7 @@
+/*
+ * Denne fil står for at afsende IR puls
+ */
+
 void setupConfig() {
   pinMode(irPin, OUTPUT);
   pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
@@ -13,14 +17,14 @@ void triggerSignal() {
     delayMicroseconds(13);
   }
 
-  delayMicroseconds(300);    // Sikrer at modtageren altid sender ultralydssignal før afsenderen
+  delayMicroseconds(300);  // Sikrer at modtageren altid sender ultralydssignal før afsenderen
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
   // Sets the trigPin on HIGH state for 10 micro seconds
   digitalWrite(trigPin, HIGH);
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
- 
+ Serial.println("IR sendt");
 lastMillis = millis();
 // delay(200);
 }
