@@ -5,10 +5,10 @@
 //This function is configuring the different pins and devices.
 void setupConfig() {
   Serial.begin(9600);
-  pinMode(trig1Pin, OUTPUT); // Sets the trigPin as an Output
-  pinMode(echo1Pin, INPUT); // Sets the echoPin as an Input
-  pinMode(trig2Pin, OUTPUT); // Sets the trigPin as an Output
-  pinMode(echo2Pin, INPUT); // Sets the echoPin as an Input
+  pinMode(trig1Pin, OUTPUT);           // Sets the trigPin as an output
+  pinMode(echo1Pin, INPUT);            // Sets the echoPin as an input
+  pinMode(trig2Pin, OUTPUT);           // Sets the trigPin as an output
+  pinMode(echo2Pin, INPUT);            // Sets the echoPin as an input
   pinMode(motorPWMPin, OUTPUT);
   pinMode(IRrecieverpin, INPUT);
   myservo.attach(9);
@@ -25,19 +25,19 @@ void motorPID() {
   Error = (long)distanceReal - (long)distanceGoal;
 
   // Calculate the PID
-  PIDValue = Error * motorPTerm;   // start with proportional gain
-  accumulator += Error;  // accumulator is sum of Errors
-  //PIDValue += motorITerm * accumulator; // add integral gain and Error accumulation
-  //PIDValue += motorDTerm * Error; // differential gain comes next
+  PIDValue = Error * motorPTerm;            // start with proportional gain
+  accumulator += Error;                     // accumulator is sum of Errors
+  //PIDValue += motorITerm * accumulator;   // add integral gain and Error accumulation
 
-  //Limit the PID to the resolution we have for the PWM variable
+                                            //Limit the PID to the resolution we have for the PWM variable
   if (PIDValue >= motorLimitMax)
     PIDValue = motorLimitMax;
   if (PIDValue <= motorLimitMin)
     PIDValue = motorLimitMin;
 
-  //Here we have the PID output plus the max limit we've made for it at the regulation above.
-  motorPWMOutput = PIDValue + 18;
+    motorPWMOutput = PIDValue + 18;         //Here we have the PID output plus the max limit 
+                                            //we've made for it at the regulation above.
+  
 }
 
 //PID for the servo.
@@ -50,59 +50,55 @@ void servoPID() {
 
   Error = directionReal - float(directionGoal);
 
-  // Calculate the PID
-  PIDValue = Error * servoPTerm;   // start with proportional gain
-  //accumulator += Error;  // accumulator is sum of Errors
+                                          // Calculate the PID
+  PIDValue = Error * servoPTerm;          // start with proportional gain
+  //accumulator += Error;                 // accumulator is sum of Errors
   //PIDValue += servoITerm * accumulator; // add integral gain and Error accumulation
-  //PIDValue += servoDTerm * Error; // differential gain comes next
 
-  //Here's the PID output for the servo.
-  servoPWMOutput = PIDValue;
+                            
+  servoPWMOutput = PIDValue;              // Here's the PID output for the servo.
 }
 
-//This is the function that starts it all.
-void startFunction() {
+                      
+void startFunction() {                    //This is the function that starts it all.
   StopFunction();
 
-  //If the ir receiver gets a signal, it starts the function below which triggers a signal. This is because the HC-SR04 needs to send a signal, before it's echopin is ready to receive a signal.
+  //If the IR receiver receives a signal, it starts the function below which triggers a signal. 
+  //This happens because the HC-SR04 needs to send a signal, before the echopin is ready to receive a signal.
   while (digitalRead(IRrecieverpin) == HIGH)
   {
   }
   {
     Serial.println("Starttid for StartFunction");
     Serial.println(millis());
-    //Serial.println("Startfunction started");
-    //digitalWrite(12,LOW);
-    delayMicroseconds(20); //Eliminates problems with delays, when a signal is triggered.
+    delayMicroseconds(20);                 //Eliminates problems with delays, when a signal is triggered.
 
-    // Serial.println(1);
     digitalWrite(trig1Pin, LOW);
     digitalWrite(trig2Pin, LOW);
 
-
     delayMicroseconds(2);
-    // Sets the trigPin on HIGH state for 10 micro seconds
+
     digitalWrite(trig1Pin, HIGH);
     digitalWrite(trig2Pin, HIGH);
 
-
-    delayMicroseconds(10);
+    delayMicroseconds(10);                 // Sets the trigPin on HIGH state for 10 micro seconds
     digitalWrite(trig1Pin, LOW);
     digitalWrite(trig2Pin, LOW);
     StopFunction();
-
-    //After the echo is ready, the next function for measuring ultrasonic values are ready to run.
+                                           //After the echo is ready, the next function for 
+                                           //measuring ultrasonic values are ready to run.
     measureAndCalculate();
   }
 }
-
-//This function is making the measurements of the distance and the steering values for the PIDs.
+//This function is making the measurements of the distance 
+//and the steering values for the PIDs.
 void measureAndCalculate() {
 
-  delayMicroseconds(800); //This delay is here to make sure that the echopin has gone to low, before a signal is sent to Car2 from Car1. It's unknown why, but there a lot of unrealistic measurements at lower delay.
-
-  //The start values for the variables is defined here.
-  unsigned long echo1Start = micros();
+  delayMicroseconds(800);                  // This delay is here to make sure that the echopin has gone
+                                           // low, before a signal is sent to the platooning car from the leading car. 
+                                           // It's unknown why, but there a lot of unrealistic measurements at lower delay.
+  
+  unsigned long echo1Start = micros();     //The start values for the variables is defined here.
   unsigned long echo1End = 0;
   unsigned long echo1Time;
 
@@ -119,26 +115,26 @@ void measureAndCalculate() {
 
   while (1) {
     StopFunction();
-    int val1 = digitalRead(echo1Pin); //Tells if the echopin is high or low.
+    int val1 = digitalRead(echo1Pin);       //Tells if the echopin is high or low.
     int val2 = digitalRead(echo2Pin);
 
-    trigBool1 = true; //Boolean that's used with the while loop above.
+    trigBool1 = true;                       //Boolean that's used with the while loop above.
 
     if (val1 == 0 && trigBool1 == true && readyBool1 == false) //Here the echopin goes low, and therefore the measurement is done.
     {
       echo1End = micros();
-      readyBool1 = true; // Makes sure that only one endtime is being measured.
+      readyBool1 = true;                    // Makes sure that only one endtime is being measured.
     }
 
-    //The same thing as above, is happening for sensor nr. 2.
+                                            //The same thing as above, is happening for sensor no. 2.
     if (val2 == 0 && trigBool1 == true && readyBool2 == false)
     {
       echo2End = micros();
       readyBool2 = true;
     }
 
-    if (echo1End != 0 && echo2End != 0) { //If there has been measured an endtime on both sensors, the the function will measure the distance and direction below.
-      echo1Time = echo1End - echo1Start;
+    if (echo1End != 0 && echo2End != 0) {   //If there has been measured an endtime on both sensors, 
+      echo1Time = echo1End - echo1Start;    //the the function will measure the distance and direction below.
       echo2Time = echo2End - echo2Start;
 
       //The distance is measured here.
@@ -146,12 +142,6 @@ void measureAndCalculate() {
 
       //If the distance is between 100 and 10, the code will move on from here. This is to eliminate all the flickering values, that will occur from the ultrasonic sensors.
       if (distanceReal < 100 && distanceReal > 10) {
-
-        //Debugging lines
-        //Serial.println("Sensor 1: " + String(echo1Time * 0.034) + "    Start: " + String(echo1Start) + "    End: " + String(echo1End));
-        //Serial.println("Sensor 2: " + String(echo2Time * 0.034) + "    Start: " + String(echo2Start) + "    End: " + String(echo2End));
-        //Serial.print("PWM servo: "); Serial.println(servoPWMOutput);
-        //Serial.print("Dist: "); Serial.println(distanceReal);
 
         motorPID();   //Calculate the PID output for the motor.
         servoPID();   //Calculates the PID output for the servo.
