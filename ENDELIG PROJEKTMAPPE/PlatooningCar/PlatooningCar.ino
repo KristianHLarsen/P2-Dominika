@@ -25,7 +25,7 @@ int motorPTerm = 1;
 int motorITerm = 0;
 int motorLimitMax = 18;
 int motorLimitMin = -17;
-int distanceGoal = 25;
+int distanceGoal = 45;
 
 //PID input for servo
 float directionReal;
@@ -62,15 +62,18 @@ void setup() {
   radioSetup();
   Serial3.setTimeout(10000);
   Serial3.begin(9600);
+  myservo.write(105);                              // Correct the steering
+  //analogWrite(motorPWMPin, 100);
+
 }
 
 void StopFunction() {
-  if (Serial3.available() > 0)    
+  if (Serial3.available() > 0)
   {
     value = receiveData();        // Make a value with the int from receiveData() (either 0 or 1)
     if (value == 0)               // If the stop-signal is received
     {
-      Serial.println("StopCar = " + String(value));   // Serial print for debugging.  
+      //Serial.println("StopCar = " + String(value));   // Serial print for debugging.
       analogWrite(motorPWMPin, 0);                    // Stop the car
       myservo.write(125);                             // Correct the steering
     }
@@ -82,12 +85,13 @@ void loop() {
   if (Serial3.available() > 0)
   {
     value = receiveData();
-    Serial.println("Data modtaget: " + String(value)); // Serial print for debugging
+    //Serial.println("Data modtaget: " + String(value)); // Serial print for debugging
 
     if (value == 0)                                    // If the stop-signal is received, stop the car and correct the steering
     {
+      myservo.write(110);                              // Correct the steering
+
       analogWrite(motorPWMPin, 0);                     // Stop the car
-      myservo.write(125);                              // Correct the steering
     }
 
     if (value == 1)                                    // If start-signal is received
