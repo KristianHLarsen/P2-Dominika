@@ -29,15 +29,15 @@ void motorPID() {
   accumulator += Error;                     // accumulator is sum of Errors
   //PIDValue += motorITerm * accumulator;   // add integral gain and Error accumulation
 
-                                            //Limit the PID to the resolution we have for the PWM variable
+  //Limit the PID to the resolution we have for the PWM variable
   if (PIDValue >= motorLimitMax)
     PIDValue = motorLimitMax;
   if (PIDValue <= motorLimitMin)
     PIDValue = motorLimitMin;
 
-    motorPWMOutput = PIDValue + 18;         //Here we have the PID output plus the max limit 
-                                            //we've made for it at the regulation above.
-  
+  motorPWMOutput = PIDValue + 18;         //Here we have the PID output plus the max limit
+  //we've made for it at the regulation above.
+
 }
 
 //PID for the servo.
@@ -50,27 +50,27 @@ void servoPID() {
 
   Error = directionReal - float(directionGoal);
 
-                                          // Calculate the PID
+  // Calculate the PID
   PIDValue = Error * servoPTerm;          // start with proportional gain
   //accumulator += Error;                 // accumulator is sum of Errors
   //PIDValue += servoITerm * accumulator; // add integral gain and Error accumulation
 
-                            
+
   servoPWMOutput = PIDValue;              // Here's the PID output for the servo.
 }
 
-                      
+
 void startFunction() {                    //This is the function that starts it all.
   StopFunction();
 
-  //If the IR receiver receives a signal, it starts the function below which triggers a signal. 
+  //If the IR receiver receives a signal, it starts the function below which triggers a signal.
   //This happens because the HC-SR04 needs to send a signal, before the echopin is ready to receive a signal.
   while (digitalRead(IRrecieverpin) == HIGH)
   {
   }
   {
-    Serial.println("Starttid for StartFunction");
-    Serial.println(millis());
+    // Serial.println("Starttid for StartFunction");
+    // Serial.println(millis());
     delayMicroseconds(20);                 //Eliminates problems with delays, when a signal is triggered.
 
     digitalWrite(trig1Pin, LOW);
@@ -85,19 +85,19 @@ void startFunction() {                    //This is the function that starts it 
     digitalWrite(trig1Pin, LOW);
     digitalWrite(trig2Pin, LOW);
     StopFunction();
-                                           //After the echo is ready, the next function for 
-                                           //measuring ultrasonic values are ready to run.
+    //After the echo is ready, the next function for
+    //measuring ultrasonic values are ready to run.
     measureAndCalculate();
   }
 }
-//This function is making the measurements of the distance 
+//This function is making the measurements of the distance
 //and the steering values for the PIDs.
 void measureAndCalculate() {
 
   delayMicroseconds(800);                  // This delay is here to make sure that the echopin has gone
-                                           // low, before a signal is sent to the platooning car from the leading car. 
-                                           // It's unknown why, but there a lot of unrealistic measurements at lower delay.
-  
+  // low, before a signal is sent to the platooning car from the leading car.
+  // It's unknown why, but there a lot of unrealistic measurements at lower delay.
+
   unsigned long echo1Start = micros();     //The start values for the variables is defined here.
   unsigned long echo1End = 0;
   unsigned long echo1Time;
@@ -126,21 +126,23 @@ void measureAndCalculate() {
       readyBool1 = true;                    // Makes sure that only one endtime is being measured.
     }
 
-                                            //The same thing as above, is happening for sensor no. 2.
+    //The same thing as above, is happening for sensor no. 2.
     if (val2 == 0 && trigBool1 == true && readyBool2 == false)
     {
       echo2End = micros();
       readyBool2 = true;
     }
 
-    if (echo1End != 0 && echo2End != 0) {   //If there has been measured an endtime on both sensors, 
+    if (echo1End != 0 && echo2End != 0) {   //If there has been measured an endtime on both sensors,
       echo1Time = echo1End - echo1Start;    //the the function will measure the distance and direction below.
       echo2Time = echo2End - echo2Start;
 
       //The distance is measured here.
       distanceReal = (echo1Time * 0.034 + echo2Time * 0.034) / 2;
+      //Serial.println(distanceReal);
 
-      //If the distance is between 100 and 10, the code will move on from here. 
+
+      //If the distance is between 100 and 10, the code will move on from here.
       //This is to eliminate all the flickering values, that will occur from the ultrasonic sensors.
       if (distanceReal < 100 && distanceReal > 10) {
 
@@ -150,22 +152,21 @@ void measureAndCalculate() {
         //Puts 4 different measurements into an array and calculates the avarage.
         //Only one measurement is used here, so the servo is going back to idle after.
         float difference = (echo1Time * 0.034 - echo2Time * 0.034);
-
-        //With the difference between the two sensors the array is filled up with 4 values. 
+        //With the difference between the two sensors the array is filled up with 4 values.
         //After that an avarage is calculated which is the direction.
-        
+
         avarage[aCount] = difference; //Calculates the difference between the two sensors, to make a direction value callede difference.
         aCount++;
         if (aCount == 1) {
           directionReal = (avarage[0] + avarage[1] + avarage[2] + avarage[3]) / 1;
-          Serial.println(directionReal);
+          //Serial.println(directionReal);
           aCount = 0;
         }
       }
       measureStarttime = millis();
       delay(80);
-      Serial.println("Endtid for StartFunction");
-      Serial.println(millis());
+      //Serial.println("Endtid for StartFunction");
+      //Serial.println(millis());
       StopFunction();
       break;                           //The while loop stops, because the measurements are done.
     }
@@ -175,17 +176,18 @@ void measureAndCalculate() {
 //This function makes sure all the mesured values, are being used for the motor and the servo.
 void motorControl() {
   //Makes sure the DC motor dosn't use a PWM signal under 20, because it's the minimal value for the motor to get running.
-  if (motorPWMOutput < 20) {
+//  Serial.println(motorPWMOutput);
+
+  if (motorPWMOutput < 20 || motorPWMOutput > 35) {
     motorPWMOutput = 0;
   }
-
   //Here the motor is getting the signal, for it to start running.
   analogWrite(motorPWMPin, motorPWMOutput);
 
   servoVal = map(servoPWMOutput, -20, 25, 95, 125);   //Scales the value for the servo from the value that the PID calculates.
   myservo.write(servoVal);                            //Sets the servo position according to the scaled value.
-
-                                                      //Makes the car stop if no signal is received in 500 ms.
+Serial.println(servoVal);
+  //Makes the car stop if no signal is received in 500 ms.
   if (millis() - measureStarttime > 500)
   {
     motorPWMOutput = 0;

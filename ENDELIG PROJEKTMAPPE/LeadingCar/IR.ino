@@ -25,4 +25,4 @@ void triggerSignal() {
   digitalWrite(trigPin, LOW);
   Serial.println("IR sendt");  //serial print for debugging. 
   lastMillis = millis();
-
+}

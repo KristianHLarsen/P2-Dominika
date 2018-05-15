@@ -14,10 +14,10 @@ int inputSM; // input serial monitor
 #define OUTCHAR 100
 char instring[NRCHAR]; //array for received data. 
 byte outString[3] = {111, 22, 1}; //array with our data. 
-int carStop = 1; //carStop status. 1 = driving. 1 = STOP
+int carStop = 1; //carStop status. 1 = driving. 0 = STOP
 
 int motorVal;
-int INa = 7;
+int INa = 7;  // Direction on DC motor
 int INb = 6;
 int pwmpin = 5;
 int motorSpeed; //Motorspeed. Min. value: 30.  Max. value: 255
@@ -59,7 +59,7 @@ void setup()
 
 void loop()
 {
-  while (millis() - lastMillis < 200) // Read RF for 200 ms, then meassure ultrasonic sensor. 
+  while (millis() - lastMillis < 200) // Read RF for 200 ms, then meassure ultrasonic sensor one time. 
   {
     receiveString(); //RF
   }
@@ -77,13 +77,15 @@ void RFNextCar(int x)  {                // Function for sending a stop or start 
 void receiveString() {
   if (Serial3.available() > 0 )
   {
-    Serial3.readBytesUntil('/', instring, NRCHAR); //break character = 10 = return
+    Serial3.readBytesUntil('/', instring, NRCHAR); //break character = /
     Serial3.flush();
     String str = String(instring);
     char startChar = str.charAt(0);                //Check the first character in the array
     if (startChar == '=') {                        //If the start-character is correct, proceed to analyze the data.
       splitUp(str);                                //split up the received string
     }
+  }
+}
 
 void splitUp(String A ) //Function for splitting up the received string. Using seperators, it makes 3 substrings and converts them to ints. 
 {
