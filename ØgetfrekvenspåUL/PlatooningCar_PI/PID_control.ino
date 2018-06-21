@@ -11,6 +11,7 @@ void setupConfig() {
   pinMode(echo2Pin, INPUT);            // Sets the echoPin as an input
   pinMode(motorPWMPin, OUTPUT);
   pinMode(IRrecieverpin, INPUT);
+  pinMode(badMeasurement, OUTPUT);
   myservo.attach(9);
   pinMode(directionPin, OUTPUT);
   digitalWrite(directionPin, HIGH);
@@ -25,7 +26,7 @@ void motorPID() {
 long accumulator = 0;
 
   // Calculate the PID
-  for (int i = 6; i > 0; i--) {
+  for (int i = 10; i > 0; i--) {
     Error[i] = Error[i - 1];
     accumulator += Error[i];                     // accumulator is sum of Errors
   }
@@ -44,7 +45,7 @@ long accumulator = 0;
   if (PIDValue <= motorLimitMin)
     PIDValue = motorLimitMin;
 
-  motorPWMOutput = PIDValue + 18;         //Here we have the PID output plus the max limit
+  motorPWMOutput = PIDValue + 21;         //Here we have the PID output plus the max limit
   //we've made for it at the regulation above.
 
 }
@@ -122,8 +123,10 @@ void measureAndCalculate() {
 
   bool readyBool1 = false;
   bool readyBool2 = false;
-  
-
+Serial.print("badMeasure:   "); Serial.println(badMeasure);
+Serial.print("LoopCount:    "); Serial.println(loopCount);
+digitalWrite(badMeasurement, LOW);
+loopCount++; //Counts loops
   while (1) {
     StopFunction();
     int val1 = digitalRead(echo1Pin);       //Tells if the echopin is high or low.
@@ -156,7 +159,7 @@ void measureAndCalculate() {
       //If the distance is between 100 and 10, the code will move on from here.
       //This is to eliminate all the flickering values, that will occur from the ultrasonic sensors.
       if (distanceReal < 100 && distanceReal > 10) {
-
+      
         motorPID();                         //Calculate the PID output for the motor.
         servoPID();                         //Calculates the PID output for the servo.
 
@@ -174,16 +177,24 @@ void measureAndCalculate() {
           aCount = 0;
         }
       }
+      else{
+        badMeasure++;
+        digitalWrite(badMeasurement, HIGH);
+        }
       measureStarttime = millis();
      
       delay(5);
+      
+      
       //Serial.println("Endtid for StartFunction");
       //Serial.println(millis());
       StopFunction();
       break;                           //The while loop stops, because the measurements are done.
     }
     if(echoTimeout - echo1Start > 8000){
-    break;
+      badMeasure++;
+      digitalWrite(badMeasurement, HIGH);
+      break;
     }
   }
 }

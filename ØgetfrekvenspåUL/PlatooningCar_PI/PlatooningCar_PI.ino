@@ -21,16 +21,16 @@
 //PID input for DC motor
 double distanceReal;
 float motorPWMOutput;
-float motorPTerm = 0.8;
-float motorITerm = 0.08;
-int motorLimitMax = 40;
+float motorPTerm = 0.9;
+float motorITerm = 0.03;
+int motorLimitMax = 30;
 int motorLimitMin = -17;
 int distanceGoal = 35;
 
 //PID input for servo
 float directionReal;
 float servoPWMOutput;
-int servoPTerm = 5;
+int servoPTerm = 2;
 int servoITerm = 0;
 int servoLimitMax = 200;
 int servoLimitMin = 100;
@@ -45,6 +45,7 @@ const int echo2Pin = 23;
 int directionPin = 7;
 int motorPWMPin = 6;
 int IRrecieverpin = 5;
+const int badMeasurement = 13;
 
 //Global variables for the avareage calculator that controls steering
 float avarage[4];
@@ -55,6 +56,9 @@ unsigned long measureStarttime;
 
 int value;
 Servo myservo;
+//GLOBAL VALUES FOR DEBUGGING
+unsigned long loopCount=0; 
+unsigned long badMeasure=0;
 
 void setup() {
   Serial.begin(9600);
@@ -64,7 +68,6 @@ void setup() {
   Serial3.begin(9600);
   myservo.write(105);                              // Correct the steering
   //analogWrite(motorPWMPin, 100);
-
 }
 
 void StopFunction() {
@@ -81,7 +84,8 @@ void StopFunction() {
   }
 }
 
-void loop() {
+void loop() {  
+  
   if (Serial3.available() > 0)
   {
     value = receiveData();
@@ -100,5 +104,4 @@ void loop() {
       motorControl();                                  // Run the motorcontrol
     }
   }
-
 }

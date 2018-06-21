@@ -40,5 +40,5 @@ void motorControl(int motorVal) {
       motorSpeed = 30;
     }
   }
-  analogWrite(pwmpin, motorSpeed);               // Set the motorspeed. 
+  analogWrite(pwmpin, 22);               // Set the motorspeed. 
 }
